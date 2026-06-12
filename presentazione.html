@@ -1,0 +1,876 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corso Allievi Agenti — Presentazione SILP CGIL</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blu-deep:#14233F;
+    --blu:#1F3864;
+    --rosso:#C8102E;
+    --giallo:#FFE699;
+    --verde:#4FA66B;
+    --crema:#F7F3E8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;height:100%;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--blu-deep);
+    color:var(--crema);
+    overflow:hidden;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  /* TOPBAR */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    padding:1.1rem 1.6rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    color:var(--crema);
+    opacity:.85;
+    flex:0 0 auto;
+    gap:1rem;
+  }
+  .topbar-brand{font-weight:600;letter-spacing:.18em; flex:0 0 auto;}
+  .topbar-section{flex:1;text-align:center;}
+  .topbar-counter{font-weight:500; flex:0 0 auto;}
+  .icon-btn{
+    background:transparent;
+    border:1px solid rgba(247,243,232,.35);
+    color:var(--crema);
+    width:2.2rem;
+    height:2.2rem;
+    border-radius:50%;
+    cursor:pointer;
+    flex:0 0 auto;
+    font-size:1rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+  }
+  .icon-btn:hover{background:rgba(247,243,232,.15);}
+  /* STAGE */
+  .stage{
+    flex:1 1 auto;
+    position:relative;
+    overflow:hidden;
+  }
+  .slide{
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:2rem 6vw 4rem;
+    opacity:0;
+    transform:translateY(18px);
+    transition:opacity .35s ease, transform .35s ease;
+    pointer-events:none;
+    overflow-y:auto;
+  }
+  .slide.active{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+  }
+  .slide[data-bg="deep"]{background:radial-gradient(circle at 50% 30%, var(--blu) 0%, var(--blu-deep) 70%);}
+  .slide[data-bg="blu"]{background:var(--blu);}
+  .slide[data-bg="giallo"]{background:var(--giallo); color:var(--blu-deep);}
+  /* TITLE SLIDE */
+  .eyebrow{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    letter-spacing:.2em;
+    text-transform:uppercase;
+    opacity:.7;
+    margin-bottom:1.2rem;
+  }
+  .title-big{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(3rem,9vw,7rem);
+    line-height:1;
+    margin:0 0 .6rem;
+  }
+  .title-sub{
+    font-size:clamp(1.1rem,2.4vw,1.6rem);
+    font-weight:500;
+    max-width:38ch;
+    opacity:.9;
+  }
+  .title-note{
+    margin-top:1.4rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    opacity:.55;
+    max-width:40ch;
+  }
+  .qr-block{
+    margin-top:2rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.6rem;
+  }
+  .qr-block img{
+    border-radius:14px;
+    border:6px solid var(--crema);
+    background:var(--crema);
+  }
+  .qr-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    opacity:.7;
+  }
+  .qr-url{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    opacity:.8;
+    word-break:break-all;
+    max-width:34ch;
+  }
+  /* BADGE */
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem;
+    font-weight:500;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    padding:.45rem 1.1rem;
+    border-radius:999px;
+    border:1px solid currentColor;
+    opacity:.85;
+    margin-bottom:1.4rem;
+  }
+  .badge.wordcloud{color:#9FD8FF;}
+  .badge.sondaggio{color:#FFD27A;}
+  .badge.quiz{color:#FF9AA8;}
+  /* QUESTION */
+  .question{
+    font-family:'Inter',sans-serif;
+    font-weight:900;
+    font-size:clamp(1.6rem,4.2vw,3rem);
+    line-height:1.2;
+    max-width:22ch;
+    margin:0 0 1.4rem;
+  }
+  .question .hl{color:var(--giallo);}
+  .slide[data-bg="giallo"] .question .hl{color:var(--rosso);}
+  .hint{
+    font-size:1rem;
+    opacity:.7;
+    max-width:34ch;
+    margin-bottom:1.4rem;
+  }
+  /* OPTIONS + RESULTS */
+  .options{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+    gap:.9rem;
+    width:100%;
+    max-width:780px;
+    margin-bottom:1.2rem;
+  }
+  .option{
+    position:relative;
+    overflow:hidden;
+    display:flex;
+    align-items:center;
+    gap:.7rem;
+    background:rgba(247,243,232,.08);
+    border:1px solid rgba(247,243,232,.18);
+    border-radius:14px;
+    padding:.95rem 1.1rem;
+    font-size:1.05rem;
+    font-weight:600;
+    text-align:left;
+  }
+  .slide[data-bg="giallo"] .option{
+    background:rgba(20,35,63,.06);
+    border-color:rgba(20,35,63,.18);
+  }
+  .option .letter{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    opacity:.55;
+    border:1px solid currentColor;
+    border-radius:8px;
+    width:1.8rem;
+    height:1.8rem;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    z-index:1;
+  }
+  .option .opt-text{z-index:1; flex:1;}
+  .option .opt-count{
+    z-index:1;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    opacity:.7;
+  }
+  .option .bar-fill{
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:0%;
+    background:rgba(79,166,107,.35);
+    transition:width .4s ease;
+  }
+  /* TOOLBAR (reveal + results) */
+  .toolbar{
+    display:flex;
+    gap:.7rem;
+    flex-wrap:wrap;
+    justify-content:center;
+    margin-bottom:1rem;
+  }
+  .ghost-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    background:transparent;
+    border:1px solid var(--crema);
+    color:var(--crema);
+    border-radius:999px;
+    padding:.7rem 1.6rem;
+    cursor:pointer;
+    transition:background .2s, color .2s;
+  }
+  .slide[data-bg="giallo"] .ghost-btn{border-color:var(--blu-deep); color:var(--blu-deep);}
+  .ghost-btn:hover{background:var(--crema); color:var(--blu-deep);}
+  .slide[data-bg="giallo"] .ghost-btn:hover{background:var(--blu-deep); color:var(--giallo);}
+  .answer-panel{
+    display:none;
+    margin-top:.6rem;
+    max-width:640px;
+    background:rgba(79,166,107,.16);
+    border:1px solid var(--verde);
+    border-radius:16px;
+    padding:1.1rem 1.4rem;
+    font-size:1.05rem;
+    line-height:1.5;
+  }
+  .answer-panel.open{display:block; animation:fadein .3s ease;}
+  @keyframes fadein{from{opacity:0; transform:translateY(8px);} to{opacity:1; transform:translateY(0);}}
+  .answer-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.75rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--verde);
+    display:block;
+    margin-bottom:.4rem;
+  }
+  /* WORD CLOUD RESULTS */
+  .cloud{
+    display:none;
+    flex-wrap:wrap;
+    gap:.6rem;
+    justify-content:center;
+    align-items:center;
+    max-width:680px;
+    margin-top:.4rem;
+  }
+  .cloud.open{display:flex; animation:fadein .3s ease;}
+  .cloud-word{
+    font-weight:800;
+    color:var(--giallo);
+  }
+  .slide[data-bg="giallo"] .cloud-word{color:var(--rosso);}
+  .cloud-empty{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.85rem;
+    opacity:.6;
+  }
+  /* PAUSA */
+  .pausa-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(2.6rem,7vw,5rem);
+    margin:0 0 .3rem;
+  }
+  .pausa-sub{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.95rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    opacity:.6;
+    margin-bottom:2rem;
+  }
+  .pausa-list{
+    list-style:none;
+    padding:0;
+    margin:0;
+    display:flex;
+    flex-direction:column;
+    gap:.8rem;
+    text-align:left;
+  }
+  .pausa-list li{
+    font-size:1.2rem;
+    font-weight:600;
+    display:flex;
+    align-items:flex-start;
+    gap:.7rem;
+  }
+  .pausa-list li::before{
+    content:"→";
+    font-weight:700;
+    color:var(--rosso);
+    flex:0 0 auto;
+  }
+  /* BOTTOMBAR */
+  .bottombar{
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    gap:1rem;
+    padding:1rem 1.6rem 1.3rem;
+  }
+  .nav-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:1.3rem;
+    background:transparent;
+    border:1px solid rgba(247,243,232,.35);
+    color:var(--crema);
+    width:2.6rem;
+    height:2.6rem;
+    border-radius:50%;
+    cursor:pointer;
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    transition:background .2s;
+  }
+  .nav-btn:hover{background:rgba(247,243,232,.15);}
+  .nav-btn:focus-visible, .ghost-btn:focus-visible, .track-dot:focus-visible, .icon-btn:focus-visible{
+    outline:2px solid var(--giallo);
+    outline-offset:2px;
+  }
+  .track{
+    flex:1 1 auto;
+    display:flex;
+    align-items:center;
+    gap:.35rem;
+    overflow-x:auto;
+    padding:.3rem 0;
+  }
+  .track-group{
+    display:flex;
+    gap:.35rem;
+    padding:0 .35rem;
+    border-radius:999px;
+  }
+  .track-group.g-p1, .track-group.g-p3{background:rgba(31,56,100,.5);}
+  .track-group.g-pausa{background:rgba(255,230,153,.18);}
+  .track-group.g-p2{background:rgba(200,16,46,.18);}
+  .track-dot{
+    width:.55rem;
+    height:.55rem;
+    border-radius:50%;
+    background:rgba(247,243,232,.3);
+    border:none;
+    cursor:pointer;
+    margin:.45rem 0;
+    flex:0 0 auto;
+    transition:background .2s, transform .2s;
+  }
+  .track-dot:hover{background:rgba(247,243,232,.6);}
+  .track-dot.active{background:var(--crema); transform:scale(1.5);}
+  .track-group.g-pausa .track-dot{width:1.3rem; border-radius:4px;}
+  /* SETTINGS PANEL */
+  .overlay{
+    position:fixed;
+    inset:0;
+    background:rgba(20,35,63,.85);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    z-index:50;
+  }
+  .overlay.open{display:flex;}
+  .panel{
+    background:var(--blu);
+    border:1px solid rgba(247,243,232,.2);
+    border-radius:18px;
+    padding:1.8rem;
+    max-width:380px;
+    width:90%;
+    text-align:left;
+  }
+  .panel h2{
+    font-family:'Space Grotesk',sans-serif;
+    margin:0 0 1rem;
+    font-size:1.3rem;
+  }
+  .panel label{
+    display:block;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.75rem;
+    letter-spacing:.12em;
+    text-transform:uppercase;
+    opacity:.7;
+    margin-bottom:.4rem;
+  }
+  .panel input{
+    width:100%;
+    font-family:'Inter',sans-serif;
+    font-size:1rem;
+    padding:.7rem .9rem;
+    border-radius:10px;
+    border:1px solid rgba(247,243,232,.3);
+    background:rgba(247,243,232,.08);
+    color:var(--crema);
+    margin-bottom:1rem;
+  }
+  .panel .row{
+    display:flex;
+    gap:.6rem;
+    flex-wrap:wrap;
+    margin-bottom:1rem;
+  }
+  .panel .status{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.8rem;
+    opacity:.7;
+    margin-top:.6rem;
+    line-height:1.5;
+  }
+  .panel .close-row{
+    text-align:right;
+    margin-top:.6rem;
+  }
+</style>
+</head>
+<body>
+<div class="topbar">
+  <span class="topbar-brand">SILP CGIL</span>
+  <span class="topbar-section" id="sectionLabel"></span>
+  <span class="topbar-counter" id="counter"></span>
+  <button class="icon-btn" id="settingsBtn" aria-label="Impostazioni" title="Impostazioni e QR code">⚙</button>
+</div>
+
+<div class="stage" id="stage"></div>
+
+<div class="bottombar">
+  <button class="nav-btn" id="prevBtn" aria-label="Slide precedente">‹</button>
+  <div class="track" id="track"></div>
+  <button class="nav-btn" id="nextBtn" aria-label="Slide successiva">›</button>
+  <button class="nav-btn" id="fsBtn" aria-label="Schermo intero" title="Schermo intero (F)">⛶</button>
+</div>
+
+<div class="overlay" id="overlay">
+  <div class="panel">
+    <h2>Impostazioni relatore</h2>
+    <label for="corsoInput">Numero del corso</label>
+    <input type="text" id="corsoInput" placeholder="Esempio: 234">
+    <div class="row">
+      <button class="ghost-btn" id="saveCorsoBtn" style="border-color:var(--crema); color:var(--crema);">Salva numero corso</button>
+    </div>
+    <label for="pinInput">PIN del relatore</label>
+    <input type="text" id="pinInput" placeholder="Inserisci il PIN">
+    <div class="row">
+      <button class="ghost-btn" id="savePinBtn" style="border-color:var(--crema); color:var(--crema);">Salva PIN</button>
+      <button class="ghost-btn" id="newSessionBtn" style="border-color:var(--crema); color:var(--crema);">Nuova sessione</button>
+    </div>
+    <div class="qr-label">QR code per gli allievi</div>
+    <div class="qr-block" id="qrBlock" style="margin-top:.6rem;"></div>
+    <div class="status" id="panelStatus">Sessione non verificata.</div>
+    <div class="close-row">
+      <button class="ghost-btn" id="closeSettingsBtn" style="border-color:var(--crema); color:var(--crema);">Chiudi</button>
+    </div>
+  </div>
+</div>
+
+<script src="slides_data.js"></script>
+<script src="config.js"></script>
+<script>
+let current = 0;
+let sessionId = null;
+let resultsTimer = null;
+let courseNumber = localStorage.getItem('courseNumber') || '';
+
+const stage = document.getElementById('stage');
+const sectionLabelEl = document.getElementById('sectionLabel');
+const counterEl = document.getElementById('counter');
+const trackEl = document.getElementById('track');
+
+function letterFor(i){ return String.fromCharCode(65+i); }
+function getPin(){ return localStorage.getItem('presenterPin') || ''; }
+
+function updateDocumentTitle(){
+  document.title = (courseNumber ? courseNumber + '° ' : '') + 'Corso Allievi Agenti — Presentazione SILP CGIL';
+}
+
+function applyCourseNumber(){
+  const el = stage.querySelector('.slide[data-index="0"] .title-big');
+  if(el) el.textContent = (courseNumber || '—') + '°';
+  updateDocumentTitle();
+}
+
+function buildSlideEl(s, idx){
+  const el = document.createElement('div');
+  el.className = 'slide';
+  el.dataset.index = idx;
+
+  if(s.type === 'title'){
+    el.dataset.bg = 'deep';
+    const participantUrl = location.href.replace(/presentazione\.html.*$/, 'partecipa.html');
+    el.innerHTML = `
+      <div class="eyebrow">${s.eyebrow}</div>
+      <h1 class="title-big">${(courseNumber || '—') + '°'}</h1>
+      <div class="title-sub">${s.sub}</div>
+      <div class="title-note">${s.note}</div>
+      <div class="qr-block">
+        <div class="qr-label">Gli allievi rispondono qui</div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(participantUrl)}" width="180" height="180" alt="QR code">
+        <div class="qr-url">${participantUrl}</div>
+      </div>
+    `;
+  } else if(s.type === 'closing'){
+    el.dataset.bg = 'deep';
+    el.innerHTML = `
+      <h1 class="title-big">${s.title}</h1>
+      <div class="title-sub">${s.sub}</div>
+    `;
+  } else if(s.type === 'pausa'){
+    el.dataset.bg = 'giallo';
+    el.innerHTML = `
+      <div class="pausa-sub">${s.label}</div>
+      <h1 class="pausa-title">Pausa</h1>
+      <ul class="pausa-list">${s.list.map(i=>`<li>${i}</li>`).join('')}</ul>
+    `;
+  } else {
+    el.dataset.bg = 'blu';
+    const badge = badgeLabels[s.type];
+    const hasOptions = s.options && s.options.length > 0;
+    let html = `<div class="badge ${badge.cls}">${badge.text}</div>`;
+    html += `<h1 class="question">${s.q}</h1>`;
+    if(s.hint) html += `<div class="hint">${s.hint}</div>`;
+
+    if(hasOptions){
+      html += `<div class="options" id="opts">${s.options.map((o,i)=>`
+        <div class="option" data-key="${o.toLowerCase().trim().replace(/"/g,'&quot;')}">
+          <div class="bar-fill"></div>
+          <span class="letter">${letterFor(i)}</span>
+          <span class="opt-text">${o}</span>
+          <span class="opt-count"></span>
+        </div>`).join('')}</div>`;
+    } else if(s.type === 'wordcloud' || (s.type === 'quiz' && !hasOptions)){
+      html += `<div class="cloud" id="cloud"><span class="cloud-empty">Nessuna risposta ancora.</span></div>`;
+    }
+
+    let toolbar = '';
+    if(hasOptions || s.type === 'wordcloud' || (s.type === 'quiz' && !hasOptions)){
+      toolbar += `<button class="ghost-btn" data-action="results">Mostra risultati</button>`;
+    }
+    if(s.answer){
+      toolbar += `<button class="ghost-btn" data-action="reveal">Mostra risposta</button>`;
+    }
+    if(toolbar) html += `<div class="toolbar">${toolbar}</div>`;
+
+    if(s.answer){
+      html += `<div class="answer-panel"><span class="answer-label">Risposta</span>${s.answer}</div>`;
+    }
+
+    el.innerHTML = html;
+  }
+  return el;
+}
+
+function render(){
+  stopResultsPolling();
+  stage.innerHTML = '';
+  slides.forEach((s, i) => {
+    const el = buildSlideEl(s, i);
+    if(i === current) el.classList.add('active');
+    stage.appendChild(el);
+  });
+
+  const s = slides[current];
+  sectionLabelEl.textContent = s.section ? sectionLabels[s.section] : (s.type==='title' ? 'Inizio' : 'Fine');
+  counterEl.textContent = s.num ? `Domanda ${s.num} di 20` : '';
+
+  const revealBtn = stage.querySelector('[data-action="reveal"]');
+  if(revealBtn){
+    revealBtn.addEventListener('click', () => {
+      const panel = stage.querySelector('.answer-panel');
+      panel.classList.toggle('open');
+      revealBtn.textContent = panel.classList.contains('open') ? 'Nascondi risposta' : 'Mostra risposta';
+    });
+  }
+
+  const resultsBtn = stage.querySelector('[data-action="results"]');
+  if(resultsBtn){
+    resultsBtn.addEventListener('click', () => {
+      const showing = resultsBtn.dataset.open === '1';
+      if(showing){
+        resultsBtn.dataset.open = '0';
+        resultsBtn.textContent = 'Mostra risultati';
+        stopResultsPolling();
+        const cloud = stage.querySelector('.cloud');
+        if(cloud) cloud.classList.remove('open');
+      } else {
+        resultsBtn.dataset.open = '1';
+        resultsBtn.textContent = 'Nascondi risultati';
+        const cloud = stage.querySelector('.cloud');
+        if(cloud) cloud.classList.add('open');
+        startResultsPolling();
+      }
+    });
+  }
+
+  updateTrack();
+  pushSlide(current);
+}
+
+function goTo(i){
+  if(i < 0 || i >= slides.length) return;
+  current = i;
+  render();
+}
+
+document.getElementById('prevBtn').addEventListener('click', () => goTo(current-1));
+document.getElementById('nextBtn').addEventListener('click', () => goTo(current+1));
+document.addEventListener('keydown', (e) => {
+  if(document.getElementById('overlay').classList.contains('open')) return;
+  if(e.key === 'ArrowRight' || e.key === ' ') { e.preventDefault(); goTo(current+1); }
+  if(e.key === 'ArrowLeft') { e.preventDefault(); goTo(current-1); }
+  if(e.key === 'f' || e.key === 'F') toggleFullscreen();
+});
+
+document.getElementById('fsBtn').addEventListener('click', toggleFullscreen);
+function toggleFullscreen(){
+  if(!document.fullscreenElement){
+    document.documentElement.requestFullscreen().catch(()=>{});
+  } else {
+    document.exitFullscreen();
+  }
+}
+
+// Track / scaletta
+const trackGroups = [
+  {key:'p1', cls:'g-p1'},
+  {key:'pausa1', cls:'g-pausa'},
+  {key:'p2', cls:'g-p2'},
+  {key:'pausa2', cls:'g-pausa'},
+  {key:'p3', cls:'g-p3'}
+];
+trackGroups.forEach(g => {
+  const group = document.createElement('div');
+  group.className = 'track-group ' + g.cls;
+  slides.forEach((s, i) => {
+    if(s.section === g.key){
+      const dot = document.createElement('button');
+      dot.className = 'track-dot';
+      dot.dataset.index = i;
+      dot.setAttribute('aria-label', s.num ? `Domanda ${s.num}` : g.key);
+      dot.addEventListener('click', () => goTo(i));
+      group.appendChild(dot);
+    }
+  });
+  trackEl.appendChild(group);
+});
+
+function updateTrack(){
+  document.querySelectorAll('.track-dot').forEach(d => {
+    d.classList.toggle('active', parseInt(d.dataset.index) === current);
+  });
+}
+
+// ===== Backend sync =====
+function configured(){
+  return GAS_URL && GAS_URL.indexOf('INSERIRE') !== 0;
+}
+
+async function refreshSession(){
+  if(!configured()) return;
+  try{
+    const res = await fetch(GAS_URL + '?action=state');
+    const data = await res.json();
+    sessionId = data.sessionId;
+    if(data.corso && data.corso !== courseNumber){
+      courseNumber = data.corso;
+      localStorage.setItem('courseNumber', courseNumber);
+      applyCourseNumber();
+    }
+  } catch(err){}
+}
+
+async function pushSlide(index){
+  if(!configured()) return;
+  if(!sessionId) await refreshSession();
+  fetch(GAS_URL, {
+    method:'POST',
+    body: JSON.stringify({ action:'setSlide', slide:index, pin:getPin() })
+  }).catch(()=>{});
+}
+
+async function fetchResults(slideIndex){
+  if(!configured() || !sessionId) return null;
+  try{
+    const res = await fetch(GAS_URL + '?action=results&session=' + encodeURIComponent(sessionId) + '&slide=' + slideIndex);
+    return await res.json();
+  } catch(err){
+    return null;
+  }
+}
+
+function applyResults(slideIndex, data){
+  if(!data) return;
+  const s = slides[slideIndex];
+  const hasOptions = s.options && s.options.length > 0;
+
+  if(hasOptions){
+    document.querySelectorAll('#opts .option').forEach(optEl => {
+      const key = optEl.dataset.key;
+      const count = data.counts[key] || 0;
+      const pct = data.total > 0 ? Math.round((count/data.total)*100) : 0;
+      optEl.querySelector('.bar-fill').style.width = pct + '%';
+      optEl.querySelector('.opt-count').textContent = count > 0 ? (count + ' · ' + pct + '%') : '';
+    });
+  } else {
+    const cloud = stage.querySelector('#cloud');
+    if(!cloud) return;
+    const entries = Object.entries(data.counts || {});
+    if(entries.length === 0){
+      cloud.innerHTML = '<span class="cloud-empty">Nessuna risposta ancora.</span>';
+      return;
+    }
+    entries.sort((a,b) => b[1]-a[1]);
+    const max = entries[0][1];
+    cloud.innerHTML = entries.map(([word,count]) => {
+      const size = 0.9 + (count/max) * 1.8;
+      return `<span class="cloud-word" style="font-size:${size}rem">${word}</span>`;
+    }).join('');
+  }
+}
+
+function startResultsPolling(){
+  stopResultsPolling();
+  const idx = current;
+  const tick = async () => {
+    const data = await fetchResults(idx);
+    applyResults(idx, data);
+  };
+  tick();
+  resultsTimer = setInterval(tick, 3000);
+}
+function stopResultsPolling(){
+  if(resultsTimer){ clearInterval(resultsTimer); resultsTimer = null; }
+}
+
+// ===== Settings panel =====
+const overlay = document.getElementById('overlay');
+const corsoInput = document.getElementById('corsoInput');
+const pinInput = document.getElementById('pinInput');
+const panelStatus = document.getElementById('panelStatus');
+const qrBlock = document.getElementById('qrBlock');
+
+document.getElementById('settingsBtn').addEventListener('click', () => {
+  corsoInput.value = courseNumber;
+  pinInput.value = getPin();
+  buildQrBlock();
+  overlay.classList.add('open');
+  refreshSession().then(() => {
+    corsoInput.value = courseNumber;
+    panelStatus.textContent = configured()
+      ? ('Connesso. Sessione attuale: ' + (sessionId || '—'))
+      : 'Backend non configurato: impostare GAS_URL in config.js.';
+  });
+});
+document.getElementById('closeSettingsBtn').addEventListener('click', () => overlay.classList.remove('open'));
+
+document.getElementById('savePinBtn').addEventListener('click', () => {
+  localStorage.setItem('presenterPin', pinInput.value.trim());
+  panelStatus.textContent = 'PIN salvato su questo dispositivo.';
+});
+
+document.getElementById('saveCorsoBtn').addEventListener('click', async () => {
+  const value = corsoInput.value.trim();
+  courseNumber = value;
+  localStorage.setItem('courseNumber', courseNumber);
+  applyCourseNumber();
+  if(!configured()){
+    panelStatus.textContent = 'Numero corso salvato su questo dispositivo. Backend non configurato, gli allievi non lo vedranno.';
+    return;
+  }
+  try{
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      body: JSON.stringify({ action:'setCorso', corso:value, pin:getPin() })
+    });
+    const data = await res.json();
+    if(data.error){
+      panelStatus.textContent = 'Numero corso salvato qui, ma il backend ha risposto: ' + data.error + '. Controlla il PIN.';
+      return;
+    }
+    panelStatus.textContent = 'Numero corso aggiornato per tutti i dispositivi collegati.';
+  } catch(err){
+    panelStatus.textContent = 'Numero corso salvato qui, ma non è stato possibile aggiornare il backend.';
+  }
+});
+
+document.getElementById('newSessionBtn').addEventListener('click', async () => {
+  if(!configured()){
+    panelStatus.textContent = 'Backend non configurato: impostare GAS_URL in config.js.';
+    return;
+  }
+  panelStatus.textContent = 'Avvio nuova sessione…';
+  try{
+    const res = await fetch(GAS_URL, {
+      method:'POST',
+      body: JSON.stringify({ action:'newSession', pin:getPin(), corso:courseNumber })
+    });
+    const data = await res.json();
+    if(data.error){
+      panelStatus.textContent = 'Errore: ' + data.error + '. Controlla il PIN.';
+      return;
+    }
+    sessionId = data.sessionId;
+    if(data.corso){
+      courseNumber = data.corso;
+      localStorage.setItem('courseNumber', courseNumber);
+      applyCourseNumber();
+    }
+    panelStatus.textContent = 'Nuova sessione avviata: ' + sessionId + '. Le slide riprendono dall\'inizio per gli allievi.';
+    goTo(0);
+  } catch(err){
+    panelStatus.textContent = 'Errore di connessione al backend.';
+  }
+});
+
+function buildQrBlock(){
+  const participantUrl = location.href.replace(/presentazione\.html.*$/, 'partecipa.html');
+  qrBlock.innerHTML = `
+    <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(participantUrl)}" width="160" height="160" alt="QR code">
+    <div class="qr-url">${participantUrl}</div>
+  `;
+}
+
+refreshSession();
+render();
+</script>
+</body>
+</html>
