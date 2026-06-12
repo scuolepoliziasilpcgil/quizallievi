@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Corso Allievi Agenti — Partecipa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --blu-deep:#14233F;
+    --blu:#1F3864;
+    --rosso:#C8102E;
+    --giallo:#FFE699;
+    --verde:#4FA66B;
+    --crema:#F7F3E8;
+  }
+  *{box-sizing:border-box;}
+  html,body{margin:0;}
+  body{
+    font-family:'Inter',sans-serif;
+    background:var(--blu-deep);
+    color:var(--crema);
+    min-height:100vh;
+    display:flex;
+    flex-direction:column;
+  }
+  header{
+    padding:1rem 1.2rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.78rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    opacity:.7;
+    text-align:center;
+  }
+  main{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    text-align:center;
+    padding:1.5rem 1.2rem 2.5rem;
+  }
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:.5rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.75rem;
+    font-weight:500;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    padding:.4rem 1rem;
+    border-radius:999px;
+    border:1px solid currentColor;
+    opacity:.85;
+    margin-bottom:1.4rem;
+  }
+  .badge.wordcloud{color:#9FD8FF;}
+  .badge.sondaggio{color:#FFD27A;}
+  .badge.quiz{color:#FF9AA8;}
+  .question{
+    font-weight:900;
+    font-size:clamp(1.3rem,6vw,2rem);
+    line-height:1.25;
+    max-width:24ch;
+    margin:0 0 1.6rem;
+  }
+  .question .hl{color:var(--giallo);}
+  .options{
+    display:flex;
+    flex-direction:column;
+    gap:.8rem;
+    width:100%;
+    max-width:420px;
+  }
+  .option-btn{
+    font-family:'Inter',sans-serif;
+    font-size:1.05rem;
+    font-weight:700;
+    color:var(--crema);
+    background:rgba(247,243,232,.08);
+    border:1px solid rgba(247,243,232,.22);
+    border-radius:14px;
+    padding:1rem 1.2rem;
+    text-align:left;
+    cursor:pointer;
+    transition:background .15s, border-color .15s;
+  }
+  .option-btn:active, .option-btn.selected{
+    background:var(--verde);
+    border-color:var(--verde);
+    color:var(--blu-deep);
+  }
+  .text-input-row{
+    display:flex;
+    gap:.6rem;
+    width:100%;
+    max-width:420px;
+  }
+  .text-input{
+    flex:1;
+    font-family:'Inter',sans-serif;
+    font-size:1.05rem;
+    padding:.9rem 1rem;
+    border-radius:14px;
+    border:1px solid rgba(247,243,232,.3);
+    background:rgba(247,243,232,.08);
+    color:var(--crema);
+  }
+  .text-input::placeholder{color:rgba(247,243,232,.5);}
+  .send-btn{
+    font-family:'IBM Plex Mono',monospace;
+    font-weight:500;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    background:var(--verde);
+    color:var(--blu-deep);
+    border:none;
+    border-radius:14px;
+    padding:0 1.3rem;
+    cursor:pointer;
+  }
+  .send-btn:disabled{opacity:.4;}
+  .confirm{
+    font-size:1.1rem;
+    font-weight:700;
+    color:var(--verde);
+    margin-top:1rem;
+  }
+  .standby-title{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:700;
+    font-size:clamp(2.2rem,9vw,3.5rem);
+    margin:0 0 .6rem;
+  }
+  .standby-sub{
+    opacity:.75;
+    max-width:30ch;
+    font-size:1.05rem;
+  }
+  .pausa-screen{background:var(--giallo); color:var(--blu-deep); width:100%; min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center;}
+  footer{
+    padding:.8rem;
+    text-align:center;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.7rem;
+    opacity:.4;
+  }
+  .config-warning{
+    max-width:34ch;
+    font-size:.95rem;
+    line-height:1.5;
+    opacity:.8;
+  }
+</style>
+</head>
+<body>
+<header id="pageHeader">SILP CGIL · Corso Allievi Agenti</header>
+<main id="main">
+  <div class="standby-title">Connessione…</div>
+</main>
+<footer>Aggiornamento automatico ogni pochi secondi</footer>
+
+<script src="slides_data.js"></script>
+<script src="config.js"></script>
+<script>
+const main = document.getElementById('main');
+let lastSessionId = null;
+let lastSlide = null;
+let answeredKey = null;
+
+function storageKey(sessionId, slide){
+  return 'risposta_' + sessionId + '_' + slide;
+}
+
+function renderStandby(title, sub, pausaStyle){
+  if(pausaStyle){
+    main.parentElement.style.background = 'var(--giallo)';
+    main.parentElement.style.color = 'var(--blu-deep)';
+  } else {
+    main.parentElement.style.background = '';
+    main.parentElement.style.color = '';
+  }
+  main.innerHTML = `
+    <div class="standby-title">${title}</div>
+    <div class="standby-sub">${sub}</div>
+  `;
+}
+
+function renderSlide(sessionId, slideIndex){
+  main.parentElement.style.background = '';
+  main.parentElement.style.color = '';
+  const s = slides[slideIndex];
+
+  if(!s || s.type === 'title'){
+    renderStandby('Si comincia!', 'Tieni il telefono a portata di mano: le domande arriveranno qui via via che il relatore avanza con le slide.');
+    return;
+  }
+  if(s.type === 'closing'){
+    renderStandby('Grazie!', 'SILP CGIL è il vostro riferimento da oggi in poi.');
+    return;
+  }
+  if(s.type === 'pausa'){
+    renderStandby('Pausa', 'Approfittane per fare due chiacchiere con i delegati presenti in sala. Tra poco si ricomincia.', true);
+    return;
+  }
+
+  const badge = badgeLabels[s.type];
+  const already = localStorage.getItem(storageKey(sessionId, slideIndex));
+
+  let html = `<div class="badge ${badge.cls}">${badge.text}</div>`;
+  html += `<div class="question">${s.q}</div>`;
+
+  const hasOptions = s.options && s.options.length > 0;
+
+  if(already !== null){
+    html += `<div class="confirm">Risposta inviata ✅</div>`;
+    main.innerHTML = html;
+    return;
+  }
+
+  if(hasOptions){
+    html += `<div class="options" id="opts">`;
+    s.options.forEach((opt, i) => {
+      html += `<button class="option-btn" data-value="${opt.replace(/"/g,'&quot;')}">${opt}</button>`;
+    });
+    html += `</div>`;
+    main.innerHTML = html;
+    document.querySelectorAll('.option-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const value = btn.dataset.value;
+        submitAnswer(sessionId, slideIndex, value);
+      });
+    });
+  } else {
+    html += `<div class="text-input-row">
+      <input class="text-input" id="textAnswer" type="text" maxlength="40" placeholder="Scrivi qui...">
+      <button class="send-btn" id="sendBtn">Invia</button>
+    </div>`;
+    main.innerHTML = html;
+    const input = document.getElementById('textAnswer');
+    const btn = document.getElementById('sendBtn');
+    const send = () => {
+      const value = input.value.trim();
+      if(!value) return;
+      submitAnswer(sessionId, slideIndex, value);
+    };
+    btn.addEventListener('click', send);
+    input.addEventListener('keydown', e => { if(e.key === 'Enter') send(); });
+  }
+}
+
+function submitAnswer(sessionId, slideIndex, value){
+  localStorage.setItem(storageKey(sessionId, slideIndex), value);
+  main.innerHTML = `<div class="confirm">Risposta inviata ✅</div>`;
+  fetch(GAS_URL, {
+    method:'POST',
+    body: JSON.stringify({ action:'vote', sessionId: sessionId, slide: slideIndex, value: value })
+  }).catch(()=>{});
+}
+
+let lastCorso = null;
+const pageHeader = document.getElementById('pageHeader');
+
+async function poll(){
+  if(GAS_URL.indexOf('INSERIRE') === 0){
+    main.innerHTML = `<div class="config-warning">Il sistema non è ancora configurato. Manca l'indirizzo del backend in config.js.</div>`;
+    return;
+  }
+  try{
+    const res = await fetch(GAS_URL + '?action=state');
+    const data = await res.json();
+    if(data.corso && data.corso !== lastCorso){
+      lastCorso = data.corso;
+      pageHeader.textContent = 'SILP CGIL · ' + lastCorso + '° Corso Allievi Agenti';
+      document.title = lastCorso + '° Corso Allievi Agenti — Partecipa';
+    }
+    if(data.sessionId !== lastSessionId || data.slide !== lastSlide){
+      lastSessionId = data.sessionId;
+      lastSlide = data.slide;
+      renderSlide(data.sessionId, data.slide);
+    }
+  } catch(err){
+    // silenzioso, riprova al prossimo giro
+  }
+}
+
+poll();
+setInterval(poll, 5000);
+</script>
+</body>
+</html>
