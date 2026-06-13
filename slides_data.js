@@ -28,7 +28,7 @@ hint:'Scrivi una parola dal tuo cellulare.' },
 { type:'pausa', section:'pausa1', label:'Pausa 1',
 list:[
 'Vieni a conoscerci al tavolo SILP CGIL',
-'Fai le domande che ti vengono in mente ora che puoi',
+'Fai le domande che non hai fatto allo schermo',
 'Scopri cosa significa avere un sindacato al tuo fianco',
 'Si ricomincia tra poco'
 ]},
@@ -61,7 +61,7 @@ answer:'Risposta a cura del relatore regionale o provinciale presente in sala.' 
 { type:'quiz', section:'p2', num:11,
 q:'Sai quanti giorni di malattia puoi fare prima di essere escluso dal corso?',
 options:['Non c\'è limite, siamo dipendenti','Dipende dal medico','C\'è un limite preciso nel bando','Non lo so'],
-answer:'Risposta a cura del relatore regionale o provinciale presente in sala.' },
+answer:'L\'articolo 4 del decreto istitutivo del 233° fissa il limite massimo di assenze a 50 giorni per qualsiasi motivo, o 75 giorni se l\'assenza è dovuta a infermità contratta durante il corso. Otto periodi didattici di assenza, anche in giorni diversi, valgono come una giornata intera. Superato il limite si rischia la dimissione dal corso.' },
 
 // PAUSA 2
 { type:'pausa', section:'pausa2', label:'Pausa 2',
