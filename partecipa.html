@@ -9,8 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --blu-deep:#14233F;
-    --blu:#1F3864;
+    --blu-deep:#234C72;
+    --blu:#3A6CA0;
     --rosso:#C8102E;
     --giallo:#FFE699;
     --verde:#4FA66B;
@@ -25,7 +25,22 @@
     min-height:100vh;
     display:flex;
     flex-direction:column;
+    position:relative;
+    overflow-x:hidden;
   }
+  .bg-logo{
+    position:absolute;
+    top:50%; left:50%;
+    width:min(120vw,120vh); height:min(120vw,120vh);
+    transform:translate(-50%,-50%);
+    object-fit:cover;
+    opacity:.10;
+    z-index:0;
+    pointer-events:none;
+    mask-image:radial-gradient(circle, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 70%);
+    -webkit-mask-image:radial-gradient(circle, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 70%);
+  }
+  header, main, footer{position:relative; z-index:1;}
   header{
     padding:1rem 1.2rem;
     font-family:'IBM Plex Mono',monospace;
@@ -159,6 +174,7 @@
 </style>
 </head>
 <body>
+<img class="bg-logo" src="logo.jpg" alt="">
 <header id="pageHeader">SILP CGIL · Corso Allievi Agenti</header>
 <main id="main">
   <div class="standby-title">Connessione…</div>
@@ -178,12 +194,15 @@ function storageKey(sessionId, slide){
 }
 
 function renderStandby(title, sub, pausaStyle){
+  const bgLogo = document.querySelector('.bg-logo');
   if(pausaStyle){
     main.parentElement.style.background = 'var(--giallo)';
     main.parentElement.style.color = 'var(--blu-deep)';
+    if(bgLogo) bgLogo.style.display = 'none';
   } else {
     main.parentElement.style.background = '';
     main.parentElement.style.color = '';
+    if(bgLogo) bgLogo.style.display = '';
   }
   main.innerHTML = `
     <div class="standby-title">${title}</div>
@@ -194,6 +213,8 @@ function renderStandby(title, sub, pausaStyle){
 function renderSlide(sessionId, slideIndex){
   main.parentElement.style.background = '';
   main.parentElement.style.color = '';
+  const bgLogo = document.querySelector('.bg-logo');
+  if(bgLogo) bgLogo.style.display = '';
   const s = slides[slideIndex];
 
   if(!s || s.type === 'title'){

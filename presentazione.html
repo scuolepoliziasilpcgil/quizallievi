@@ -9,8 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --blu-deep:#1B3A5C;
-    --blu:#2C5A8C;
+    --blu-deep:#234C72;
+    --blu:#3A6CA0;
     --rosso:#C8102E;
     --giallo:#FFE699;
     --verde:#4FA66B;
@@ -43,7 +43,20 @@
     gap:1rem;
   }
   .topbar-brand{display:flex; align-items:center; gap:.6rem; font-weight:600;letter-spacing:.18em; flex:0 0 auto;}
-  .logo-mark{width:2.6rem; height:2.6rem; flex:0 0 auto; border-radius:6px; object-fit:cover;}
+  .logo-mark{width:3.4rem; height:3.4rem; flex:0 0 auto; border-radius:8px; object-fit:cover;}
+  .slide > *{position:relative; z-index:1;}
+  .bg-logo-huge{
+    position:absolute;
+    top:50%; left:50%;
+    width:min(85vw,85vh); height:min(85vw,85vh);
+    transform:translate(-50%,-50%);
+    object-fit:cover;
+    opacity:.14;
+    z-index:0;
+    pointer-events:none;
+    mask-image:radial-gradient(circle, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 70%);
+    -webkit-mask-image:radial-gradient(circle, rgba(0,0,0,1) 32%, rgba(0,0,0,0) 70%);
+  }
   .topbar-section{flex:1;text-align:center;}
   .topbar-counter{font-weight:500; flex:0 0 auto;}
   .icon-btn{
@@ -554,6 +567,7 @@ function buildSlideEl(s, idx){
   } else if(s.type === 'closing'){
     el.dataset.bg = 'deep';
     el.innerHTML = `
+      <img class="bg-logo-huge" src="logo.jpg" alt="">
       <h1 class="title-big">${s.title}</h1>
       <div class="title-sub">${s.sub}</div>
     `;
