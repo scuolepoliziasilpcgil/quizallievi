@@ -570,7 +570,7 @@ function buildSlideEl(s, idx){
     if(s.hint) html += `<div class="hint">${s.hint}</div>`;
 
     if(hasOptions){
-      html += `<div class="options" id="opts">${s.options.map((o,i)=>`
+      html += `<div class="options">${s.options.map((o,i)=>`
         <div class="option" data-key="${o.toLowerCase().trim().replace(/"/g,'&quot;')}">
           <div class="bar-fill"></div>
           <span class="letter">${letterFor(i)}</span>
@@ -578,7 +578,7 @@ function buildSlideEl(s, idx){
           <span class="opt-count"></span>
         </div>`).join('')}</div>`;
     } else if(s.type === 'wordcloud' || (s.type === 'quiz' && !hasOptions)){
-      html += `<div class="cloud" id="cloud"><span class="cloud-empty">Nessuna risposta ancora.</span></div>`;
+      html += `<div class="cloud"><span class="cloud-empty">Nessuna risposta ancora.</span></div>`;
     }
 
     let toolbar = '';
@@ -612,16 +612,18 @@ function render(){
   sectionLabelEl.textContent = s.section ? sectionLabels[s.section] : (s.type==='title' ? 'Inizio' : 'Fine');
   counterEl.textContent = s.num ? `Domanda ${s.num} di 20` : '';
 
-  const revealBtn = stage.querySelector('[data-action="reveal"]');
+  const activeSlide = stage.querySelector('.slide.active');
+
+  const revealBtn = activeSlide.querySelector('[data-action="reveal"]');
   if(revealBtn){
     revealBtn.addEventListener('click', () => {
-      const panel = stage.querySelector('.answer-panel');
+      const panel = activeSlide.querySelector('.answer-panel');
       panel.classList.toggle('open');
       revealBtn.textContent = panel.classList.contains('open') ? 'Nascondi risposta' : 'Mostra risposta';
     });
   }
 
-  const resultsBtn = stage.querySelector('[data-action="results"]');
+  const resultsBtn = activeSlide.querySelector('[data-action="results"]');
   if(resultsBtn){
     resultsBtn.addEventListener('click', () => {
       const showing = resultsBtn.dataset.open === '1';
@@ -629,12 +631,12 @@ function render(){
         resultsBtn.dataset.open = '0';
         resultsBtn.textContent = 'Mostra risultati';
         stopResultsPolling();
-        const cloud = stage.querySelector('.cloud');
+        const cloud = activeSlide.querySelector('.cloud');
         if(cloud) cloud.classList.remove('open');
       } else {
         resultsBtn.dataset.open = '1';
         resultsBtn.textContent = 'Nascondi risultati';
-        const cloud = stage.querySelector('.cloud');
+        const cloud = activeSlide.querySelector('.cloud');
         if(cloud) cloud.classList.add('open');
         startResultsPolling();
       }
@@ -741,9 +743,11 @@ function applyResults(slideIndex, data){
   if(!data) return;
   const s = slides[slideIndex];
   const hasOptions = s.options && s.options.length > 0;
+  const activeSlide = stage.querySelector('.slide.active');
+  if(!activeSlide) return;
 
   if(hasOptions){
-    document.querySelectorAll('#opts .option').forEach(optEl => {
+    activeSlide.querySelectorAll('.option').forEach(optEl => {
       const key = optEl.dataset.key;
       const count = data.counts[key] || 0;
       const pct = data.total > 0 ? Math.round((count/data.total)*100) : 0;
@@ -751,7 +755,7 @@ function applyResults(slideIndex, data){
       optEl.querySelector('.opt-count').textContent = count > 0 ? (count + ' · ' + pct + '%') : '';
     });
   } else {
-    const cloud = stage.querySelector('#cloud');
+    const cloud = activeSlide.querySelector('.cloud');
     if(!cloud) return;
     const entries = Object.entries(data.counts || {});
     if(entries.length === 0){
