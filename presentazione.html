@@ -9,8 +9,8 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Inter:wght@400;500;700;900&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
 <style>
   :root{
-    --blu-deep:#14233F;
-    --blu:#1F3864;
+    --blu-deep:#1B3A5C;
+    --blu:#2C5A8C;
     --rosso:#C8102E;
     --giallo:#FFE699;
     --verde:#4FA66B;
@@ -42,7 +42,8 @@
     flex:0 0 auto;
     gap:1rem;
   }
-  .topbar-brand{font-weight:600;letter-spacing:.18em; flex:0 0 auto;}
+  .topbar-brand{display:flex; align-items:center; gap:.6rem; font-weight:600;letter-spacing:.18em; flex:0 0 auto;}
+  .logo-mark{width:2rem; height:2rem; flex:0 0 auto; border-radius:6px; object-fit:cover;}
   .topbar-section{flex:1;text-align:center;}
   .topbar-counter{font-weight:500; flex:0 0 auto;}
   .icon-btn{
@@ -465,7 +466,10 @@
 </head>
 <body>
 <div class="topbar">
-  <span class="topbar-brand">SILP CGIL</span>
+  <span class="topbar-brand">
+    <img class="logo-mark" src="logo.jpg" alt="SILP CGIL">
+    <span>SILP CGIL</span>
+  </span>
   <span class="topbar-section" id="sectionLabel"></span>
   <span class="topbar-counter" id="counter"></span>
   <button class="icon-btn" id="settingsBtn" aria-label="Impostazioni" title="Impostazioni e QR code">⚙</button>
@@ -541,9 +545,8 @@ function buildSlideEl(s, idx){
       <div class="eyebrow">${s.eyebrow}</div>
       <h1 class="title-big">${(courseNumber || '—') + '°'}</h1>
       <div class="title-sub">${s.sub}</div>
-      <div class="title-note">${s.note}</div>
       <div class="qr-block">
-        <div class="qr-label">Gli allievi rispondono qui</div>
+        <div class="qr-label">Inquadrate il QR code per partecipare</div>
         <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(participantUrl)}" width="180" height="180" alt="QR code">
         <div class="qr-url">${participantUrl}</div>
       </div>
