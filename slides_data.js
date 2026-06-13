@@ -28,7 +28,7 @@ hint:'Scrivi una parola dal tuo cellulare.' },
 { type:'pausa', section:'pausa1', label:'Pausa 1',
 list:[
 'Vieni a conoscerci al tavolo SILP CGIL',
-'Fai le domande che non hai fatto allo schermo',
+'Fai le domande che ti vengono in mente ora che puoi',
 'Scopri cosa significa avere un sindacato al tuo fianco',
 'Si ricomincia tra poco'
 ]},
