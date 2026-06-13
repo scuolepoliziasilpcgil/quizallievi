@@ -140,12 +140,13 @@
     flex-wrap:wrap;
     gap:4rem;
   }
-  .closing-row{
+  .closing-logos{
     display:flex;
     align-items:center;
     justify-content:center;
     gap:5rem;
     flex-wrap:wrap;
+    margin-bottom:3rem;
   }
   .qr-block img{
     border-radius:14px;
@@ -1827,11 +1828,11 @@ function buildSlideEl(s, idx){
   } else if(s.type === 'closing'){
     el.dataset.bg = 'deep';
     el.innerHTML = `
-      <div class="closing-row">
+      <div class="closing-logos">
         <img class="logo-flank" src="logo.jpg" alt="">
-        <h1 class="title-big">${s.title}</h1>
         <img class="logo-flank" src="logo.jpg" alt="">
       </div>
+      <h1 class="title-big">${s.title}</h1>
       <div class="title-sub">${s.sub}</div>
     `;
   } else if(s.type === 'pausa'){
