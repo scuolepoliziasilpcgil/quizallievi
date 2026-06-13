@@ -44,18 +44,12 @@
   }
   .topbar-brand{display:flex; align-items:center; gap:.6rem; font-weight:600;letter-spacing:.18em; flex:0 0 auto;}
   .logo-mark{width:3.4rem; height:3.4rem; flex:0 0 auto; border-radius:8px; object-fit:cover;}
-  .slide > *{position:relative; z-index:1;}
-  .bg-logo-huge{
-    position:absolute;
-    top:50%; left:50%;
-    width:min(46vw,46vh); height:min(46vw,46vh);
-    transform:translate(-50%,-50%);
+  .logo-flank{
+    width:clamp(3rem,7vw,6.5rem);
+    height:clamp(3rem,7vw,6.5rem);
+    border-radius:12px;
     object-fit:cover;
-    opacity:.30;
-    z-index:0;
-    pointer-events:none;
-    mask-image:radial-gradient(circle, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 95%);
-    -webkit-mask-image:radial-gradient(circle, rgba(0,0,0,1) 55%, rgba(0,0,0,0) 95%);
+    flex:0 0 auto;
   }
   .topbar-section{flex:1;text-align:center;}
   .topbar-counter{font-weight:500; flex:0 0 auto;}
@@ -138,6 +132,18 @@
     flex-direction:column;
     align-items:center;
     gap:.6rem;
+  }
+  .qr-row{
+    display:flex;
+    align-items:center;
+    gap:1.4rem;
+  }
+  .closing-row{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:1.8rem;
+    flex-wrap:wrap;
   }
   .qr-block img{
     border-radius:14px;
@@ -1804,15 +1810,22 @@ function buildSlideEl(s, idx){
       <div class="title-sub">${s.sub}</div>
       <div class="qr-block">
         <div class="qr-label">Inquadrate il QR code per partecipare</div>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(participantUrl)}" width="180" height="180" alt="QR code">
+        <div class="qr-row">
+          <img class="logo-flank" src="logo.jpg" alt="">
+          <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(participantUrl)}" width="180" height="180" alt="QR code">
+          <img class="logo-flank" src="logo.jpg" alt="">
+        </div>
         <div class="qr-url">${participantUrl}</div>
       </div>
     `;
   } else if(s.type === 'closing'){
     el.dataset.bg = 'deep';
     el.innerHTML = `
-      <img class="bg-logo-huge" src="logo.jpg" alt="">
-      <h1 class="title-big">${s.title}</h1>
+      <div class="closing-row">
+        <img class="logo-flank" src="logo.jpg" alt="">
+        <h1 class="title-big">${s.title}</h1>
+        <img class="logo-flank" src="logo.jpg" alt="">
+      </div>
       <div class="title-sub">${s.sub}</div>
     `;
   } else if(s.type === 'pausa'){
