@@ -27,10 +27,10 @@ hint:'Scrivi una parola dal tuo cellulare.' },
 // PAUSA 1
 { type:'pausa', section:'pausa1', label:'Pausa 1',
 list:[
-'Circa 15 minuti, proselitismo attivo',
-'Primo contatto con i ragazzi',
-'Nessuna tessera in questa pausa',
-'Raccogliete nomi e contatti per la pausa 2'
+'Vieni a conoscerci al tavolo SILP CGIL',
+'Fai le domande che non hai fatto allo schermo',
+'Scopri cosa significa avere un sindacato al tuo fianco',
+'Si ricomincia tra poco'
 ]},
 
 // PERIODO 2 — ANQ e diritti contrattuali (5-11)
@@ -66,10 +66,10 @@ answer:'Risposta a cura del relatore regionale o provinciale presente in sala.' 
 // PAUSA 2
 { type:'pausa', section:'pausa2', label:'Pausa 2',
 list:[
-'Circa 15 minuti, proselitismo attivo',
-'Scambio contatti',
-'Tessera a chi mostra interesse',
-'Presentatevi come riferimento sulla sede di destinazione'
+'Passa al tavolo SILP CGIL',
+'Lascia un contatto per farti aiutare con la scelta delle preferenze',
+'Fai due chiacchiere con i delegati',
+'Si ricomincia tra poco'
 ]},
 
 // PERIODO 3 — Alloggio, portale e previdenza (12-20)
@@ -116,9 +116,9 @@ sub:'SILP CGIL è il vostro riferimento da oggi in poi.'
 
 const sectionLabels = {
 p1:'Periodo 1 · Preferenze e aspettative',
-pausa1:'Pausa 1 · Proselitismo attivo',
+pausa1:'Pausa 1',
 p2:'Periodo 2 · ANQ e diritti contrattuali',
-pausa2:'Pausa 2 · Proselitismo attivo',
+pausa2:'Pausa 2',
 p3:'Periodo 3 · Alloggio, portale e previdenza'
 };
 
