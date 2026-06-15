@@ -53,8 +53,25 @@
   }
   .topbar-section{flex:1;text-align:center;}
   .topbar-counter{font-weight:500; flex:0 0 auto;}
-  .stats-badge{display:flex; gap:.5rem; align-items:center; flex:0 0 auto;}
-  .stat-pill{font-size:.72rem; font-family:'IBM Plex Mono',monospace; letter-spacing:.04em;}
+  .stats-badge{display:flex; gap:1.2rem; align-items:center; flex:0 0 auto;}
+  .stat-pill{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.1rem;
+    font-family:'IBM Plex Mono',monospace;
+  }
+  .stat-pill-num{
+    font-size:1.15rem;
+    font-weight:700;
+    line-height:1;
+  }
+  .stat-pill-label{
+    font-size:.58rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    opacity:.65;
+  }
   .icon-btn{
     background:transparent;
     border:1px solid rgba(247,243,232,.35);
@@ -575,8 +592,14 @@
   <span class="topbar-section" id="sectionLabel"></span>
   <span class="topbar-counter" id="counter"></span>
   <span class="stats-badge" id="statsBadge" style="display:none">
-    <span class="stat-pill green" id="pConnessi">🟢 —</span>
-    <span class="stat-pill yellow" id="pRisposte">✅ —</span>
+    <div class="stat-pill" id="pillConnessi">
+      <span class="stat-pill-num">🟢 <span id="pConnessi">—</span></span>
+      <span class="stat-pill-label">connessi</span>
+    </div>
+    <div class="stat-pill" id="pillRisposte">
+      <span class="stat-pill-num">✅ <span id="pRisposte">—</span></span>
+      <span class="stat-pill-label">risposte</span>
+    </div>
   </span>
   <button class="icon-btn" id="settingsBtn" aria-label="Impostazioni" title="Impostazioni e QR code">⚙</button>
 </div>
@@ -1875,6 +1898,7 @@ const trackEl = document.getElementById('track');
 const statsBadge = document.getElementById('statsBadge');
 const pConnessi = document.getElementById('pConnessi');
 const pRisposte = document.getElementById('pRisposte');
+const pillRisposte = document.getElementById('pillRisposte');
 let statsTimer = null;
 
 async function updateStats(){
@@ -1884,8 +1908,8 @@ async function updateStats(){
     const data = await res.json();
     if(data.connessi !== undefined){
       statsBadge.style.display = 'flex';
-      pConnessi.textContent = '🟢 ' + data.connessi;
-      pRisposte.textContent = '✅ ' + data.risposte;
+      pConnessi.textContent = data.connessi;
+      pRisposte.textContent = data.risposte;
     }
   } catch(e){}
 }
@@ -2020,6 +2044,8 @@ function render(){
   const s = slides[current];
   sectionLabelEl.textContent = s.section ? sectionLabels[s.section] : (s.type==='title' ? 'Inizio' : 'Fine');
   counterEl.textContent = s.num ? `Domanda ${s.num} di 20` : '';
+  // sulla slide iniziale mostra solo connessi, sulle altre anche risposte
+  if(pillRisposte) pillRisposte.style.display = s.type === 'title' ? 'none' : '';
 
   const activeSlide = stage.querySelector('.slide.active');
 
