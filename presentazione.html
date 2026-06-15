@@ -363,6 +363,50 @@
     color:var(--rosso);
     flex:0 0 auto;
   }
+  .pausa-contact{
+    margin-top:1.4rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.5rem;
+    background:rgba(35,76,114,.15);
+    border:2px solid rgba(35,76,114,.3);
+    border-radius:14px;
+    padding:.9rem 1.4rem;
+  }
+  .pausa-contact-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.7rem;
+    font-weight:600;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    color:var(--blu-deep);
+  }
+  .pausa-contact img{border-radius:8px;}
+  .pausa-contact-url{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.62rem;
+    color:var(--blu-deep);
+    opacity:.6;
+    word-break:break-all;
+    text-align:center;
+  }
+  /* SLIDE FINALE QR CONTATTI */
+  .closing-contact{
+    margin-top:1.6rem;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:.5rem;
+  }
+  .closing-contact-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    opacity:.6;
+  }
+  .closing-contact img{border-radius:8px;}
   /* BOTTOMBAR */
   .bottombar{
     flex:0 0 auto;
@@ -1827,6 +1871,7 @@ function buildSlideEl(s, idx){
     `;
   } else if(s.type === 'closing'){
     el.dataset.bg = 'deep';
+    const contactUrl = location.href.replace(/presentazione\.html.*$/, '') + 'contatti/index.html';
     el.innerHTML = `
       <div class="closing-logos">
         <img class="logo-flank" src="logo.jpg" alt="">
@@ -1834,13 +1879,23 @@ function buildSlideEl(s, idx){
       </div>
       <h1 class="title-big">${s.title}</h1>
       <div class="title-sub">${s.sub}</div>
+      <div class="closing-contact">
+        <div class="closing-contact-label">Lascia i tuoi contatti</div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&color=FFE699&bgcolor=234C72&data=${encodeURIComponent(contactUrl)}" width="120" height="120" alt="QR contatti" style="border-radius:10px;">
+      </div>
     `;
   } else if(s.type === 'pausa'){
     el.dataset.bg = 'giallo';
+    const contactUrl = location.href.replace(/presentazione\.html.*$/, '') + 'contatti/index.html';
     el.innerHTML = `
       <div class="pausa-sub">${s.label}</div>
       <h1 class="pausa-title">Pausa</h1>
       <ul class="pausa-list">${s.list.map(i=>`<li>${i}</li>`).join('')}</ul>
+      <div class="pausa-contact">
+        <div class="pausa-contact-label">Lascia i tuoi contatti</div>
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&color=234C72&data=${encodeURIComponent(contactUrl)}" width="110" height="110" alt="QR contatti">
+        <div class="pausa-contact-url">${contactUrl}</div>
+      </div>
     `;
   } else {
     el.dataset.bg = 'blu';
