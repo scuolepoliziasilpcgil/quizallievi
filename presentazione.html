@@ -148,6 +148,41 @@
     flex-wrap:wrap;
     margin-bottom:3rem;
   }
+  /* nuovo layout slide finale a tre colonne */
+  .closing-grid{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:3rem;
+    width:100%;
+    flex-wrap:wrap;
+  }
+  .closing-side{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap:1rem;
+    flex:0 0 auto;
+  }
+  .closing-side .logo-flank{
+    width:clamp(8rem,18vw,16rem);
+    height:auto;
+  }
+  .closing-side-label{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.68rem;
+    letter-spacing:.1em;
+    text-transform:uppercase;
+    opacity:.6;
+  }
+  .closing-side img.qr-contact{
+    border-radius:10px;
+  }
+  .closing-center{
+    flex:1 1 auto;
+    text-align:center;
+    min-width:200px;
+  }
   .qr-block img{
     border-radius:14px;
     border:6px solid var(--crema);
@@ -1872,16 +1907,23 @@ function buildSlideEl(s, idx){
   } else if(s.type === 'closing'){
     el.dataset.bg = 'deep';
     const contactUrl = 'https://scuolepoliziasilpcgil.github.io/contatti/index.html';
+    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=FFE699&bgcolor=234C72&data=${encodeURIComponent(contactUrl)}`;
     el.innerHTML = `
-      <div class="closing-logos">
-        <img class="logo-flank" src="logo.jpg" alt="">
-        <img class="logo-flank" src="logo.jpg" alt="">
-      </div>
-      <h1 class="title-big">${s.title}</h1>
-      <div class="title-sub">${s.sub}</div>
-      <div class="closing-contact">
-        <div class="closing-contact-label">Lascia i tuoi contatti</div>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=120x120&color=FFE699&bgcolor=234C72&data=${encodeURIComponent(contactUrl)}" width="120" height="120" alt="QR contatti" style="border-radius:10px;">
+      <div class="closing-grid">
+        <div class="closing-side">
+          <img class="logo-flank" src="logo.jpg" alt="">
+          <div class="closing-side-label">Lascia i tuoi contatti</div>
+          <img class="qr-contact" src="${qrSrc}" width="160" height="160" alt="QR contatti">
+        </div>
+        <div class="closing-center">
+          <h1 class="title-big">${s.title}</h1>
+          <div class="title-sub">${s.sub}</div>
+        </div>
+        <div class="closing-side">
+          <img class="logo-flank" src="logo.jpg" alt="">
+          <div class="closing-side-label">Lascia i tuoi contatti</div>
+          <img class="qr-contact" src="${qrSrc}" width="160" height="160" alt="QR contatti">
+        </div>
       </div>
     `;
   } else if(s.type === 'pausa'){
@@ -1892,7 +1934,7 @@ function buildSlideEl(s, idx){
       <ul class="pausa-list">${s.list.map(i=>`<li>${i}</li>`).join('')}</ul>
       <div class="pausa-contact">
         <div class="pausa-contact-label">Lascia i tuoi contatti</div>
-        <img src="https://api.qrserver.com/v1/create-qr-code/?size=110x110&color=234C72&data=${encodeURIComponent(contactUrl)}" width="110" height="110" alt="QR contatti">
+        <img src="https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=234C72&data=${encodeURIComponent(contactUrl)}" width="160" height="160" alt="QR contatti">
         <div class="pausa-contact-url">${contactUrl}</div>
       </div>
     `;
