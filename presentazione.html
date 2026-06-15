@@ -153,20 +153,22 @@
     display:flex;
     align-items:center;
     justify-content:center;
-    gap:3rem;
+    gap:2.5rem;
     width:100%;
-    flex-wrap:wrap;
+    flex-wrap:nowrap;
   }
   .closing-side{
     display:flex;
     flex-direction:column;
     align-items:center;
-    gap:1rem;
+    gap:.9rem;
     flex:0 0 auto;
   }
   .closing-side .logo-flank{
-    width:clamp(8rem,18vw,16rem);
+    width:clamp(10rem,20vw,18rem);
     height:auto;
+    border-radius:14px;
+    box-shadow:0 10px 28px rgba(0,0,0,.32);
   }
   .closing-side-label{
     font-family:'IBM Plex Mono',monospace;
@@ -181,7 +183,7 @@
   .closing-center{
     flex:1 1 auto;
     text-align:center;
-    min-width:200px;
+    min-width:180px;
   }
   .qr-block img{
     border-radius:14px;
@@ -1907,13 +1909,13 @@ function buildSlideEl(s, idx){
   } else if(s.type === 'closing'){
     el.dataset.bg = 'deep';
     const contactUrl = 'https://scuolepoliziasilpcgil.github.io/contatti/index.html';
-    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=160x160&color=FFE699&bgcolor=234C72&data=${encodeURIComponent(contactUrl)}`;
+    const qrSrc = `https://api.qrserver.com/v1/create-qr-code/?size=220x220&color=FFE699&bgcolor=234C72&data=${encodeURIComponent(contactUrl)}`;
     el.innerHTML = `
       <div class="closing-grid">
         <div class="closing-side">
           <img class="logo-flank" src="logo.jpg" alt="">
           <div class="closing-side-label">Lascia i tuoi contatti</div>
-          <img class="qr-contact" src="${qrSrc}" width="160" height="160" alt="QR contatti">
+          <img class="qr-contact" src="${qrSrc}" width="220" height="220" alt="QR contatti">
         </div>
         <div class="closing-center">
           <h1 class="title-big">${s.title}</h1>
@@ -1922,7 +1924,7 @@ function buildSlideEl(s, idx){
         <div class="closing-side">
           <img class="logo-flank" src="logo.jpg" alt="">
           <div class="closing-side-label">Lascia i tuoi contatti</div>
-          <img class="qr-contact" src="${qrSrc}" width="160" height="160" alt="QR contatti">
+          <img class="qr-contact" src="${qrSrc}" width="220" height="220" alt="QR contatti">
         </div>
       </div>
     `;
