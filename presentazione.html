@@ -127,10 +127,10 @@
   .slide[data-bg="deep"]{background:radial-gradient(circle at 50% 30%, var(--blu) 0%, var(--blu-deep) 70%);}
   .slide[data-bg="blu"]{background:var(--blu);}
   .slide[data-bg="giallo"]{background:var(--giallo); color:var(--blu-deep);}
-  /* accento colore per periodo: alone radiale tenue dietro le domande */
-  .slide[data-accent="p1"]{background:radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-p1) 22%, var(--blu)) 0%, var(--blu-deep) 72%);}
-  .slide[data-accent="p2"]{background:radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-p2) 20%, var(--blu)) 0%, var(--blu-deep) 72%);}
-  .slide[data-accent="p3"]{background:radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-p3) 22%, var(--blu)) 0%, var(--blu-deep) 72%);}
+  /* accento colore per periodo: alone radiale dietro le domande */
+  .slide[data-accent="p1"]{background:radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--accent-p1) 55%, var(--blu)) 0%, var(--blu-deep) 78%);}
+  .slide[data-accent="p2"]{background:radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--accent-p2) 52%, var(--blu)) 0%, var(--blu-deep) 78%);}
+  .slide[data-accent="p3"]{background:radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--accent-p3) 55%, var(--blu)) 0%, var(--blu-deep) 78%);}
   /* TITLE SLIDE */
   .eyebrow{
     font-family:'IBM Plex Mono',monospace;
@@ -356,6 +356,7 @@
     animation:heartbeat 1.8s ease-in-out infinite;
   }
   .qr-row .heartbeat-logo:last-child{animation-delay:.9s;}
+  .closing-grid .closing-side:last-child .heartbeat-logo{animation-delay:.9s;}
   .title-slide-logos{
     display:flex;
     align-items:center;
@@ -692,7 +693,7 @@
       <button class="ghost-btn" id="newSessionBtn" style="border-color:var(--crema); color:var(--crema);">Nuova sessione</button>
     </div>
     <label for="countdownInput">Durata countdown (secondi)</label>
-    <input type="number" id="countdownInput" min="0" placeholder="10" value="10">
+    <input type="number" id="countdownInput" min="0" placeholder="15" value="15">
     <div class="row">
       <button class="ghost-btn" id="saveCountdownBtn" style="border-color:var(--crema); color:var(--crema);">Salva durata</button>
     </div>
@@ -1959,7 +1960,7 @@ let sessionId = null;
 let resultsTimer = null;
 let activeCloud = null;
 let courseNumber = localStorage.getItem('courseNumber') || '';
-let countdownSeconds = parseInt(localStorage.getItem('countdownSeconds') || '10', 10);
+let countdownSeconds = parseInt(localStorage.getItem('countdownSeconds') || '15', 10);
 let prevCloudWords = {};
 
 const stage = document.getElementById('stage');
@@ -2037,7 +2038,7 @@ function buildSlideEl(s, idx){
     el.innerHTML = `
       <div class="closing-grid">
         <div class="closing-side">
-          <img class="logo-flank" src="logo.jpg" alt="">
+          <img class="logo-flank heartbeat-logo" src="logo.jpg" alt="">
           <div class="closing-side-label">Lascia i tuoi contatti</div>
           <img class="qr-contact" src="${qrSrc}" width="220" height="220" alt="QR contatti">
         </div>
@@ -2046,7 +2047,7 @@ function buildSlideEl(s, idx){
           <div class="title-sub">${s.sub}</div>
         </div>
         <div class="closing-side">
-          <img class="logo-flank" src="logo.jpg" alt="">
+          <img class="logo-flank heartbeat-logo" src="logo.jpg" alt="">
           <div class="closing-side-label">Lascia i tuoi contatti</div>
           <img class="qr-contact" src="${qrSrc}" width="220" height="220" alt="QR contatti">
         </div>
@@ -2071,8 +2072,7 @@ function buildSlideEl(s, idx){
     else if(s.section === 'p3') el.dataset.accent = 'p3';
     const badge = badgeLabels[s.type];
     const hasOptions = s.options && s.options.length > 0;
-    let html = `<div class="countdown-bar" data-countdown></div>`;
-    html += `<div class="badge ${badge.cls}">${badge.text}</div>`;
+    let html = `<div class="badge ${badge.cls}">${badge.text}</div>`;
     html += `<h1 class="question">${s.q}</h1>`;
     if(s.hint) html += `<div class="hint">${s.hint}</div>`;
 
@@ -2123,9 +2123,6 @@ function render(){
   if(pillRisposte) pillRisposte.style.display = s.type === 'title' ? 'none' : '';
 
   const activeSlide = stage.querySelector('.slide.active');
-
-  // Avvia il countdown visivo sulle slide domanda (quiz, sondaggio, wordcloud)
-  startCountdown(activeSlide);
 
   const revealBtn = activeSlide.querySelector('[data-action="reveal"]');
   if(revealBtn){
@@ -2389,13 +2386,33 @@ document.getElementById('settingsBtn').addEventListener('click', () => {
 });
 document.getElementById('closeSettingsBtn').addEventListener('click', () => overlay.classList.remove('open'));
 
-document.getElementById('saveCountdownBtn').addEventListener('click', () => {
+document.getElementById('saveCountdownBtn').addEventListener('click', async () => {
   const val = parseInt(countdownInput.value, 10);
   countdownSeconds = isNaN(val) || val < 0 ? 0 : val;
   localStorage.setItem('countdownSeconds', String(countdownSeconds));
-  panelStatus.textContent = countdownSeconds > 0
-    ? ('Durata countdown impostata a ' + countdownSeconds + ' secondi.')
-    : 'Countdown disattivato.';
+  panelStatus.textContent = 'Salvataggio durata…';
+  if(configured()){
+    try{
+      const res = await fetch(GAS_URL, {
+        method:'POST', headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({ action:'setCountdown', countdown: countdownSeconds, pin: getPin() })
+      });
+      const data = await res.json();
+      if(data.error){
+        panelStatus.textContent = 'Durata salvata qui, ma il backend ha risposto: ' + data.error + '. Controlla il PIN.';
+        return;
+      }
+      panelStatus.textContent = countdownSeconds > 0
+        ? ('Durata countdown impostata a ' + countdownSeconds + ' secondi per tutti i dispositivi.')
+        : 'Countdown disattivato per tutti i dispositivi.';
+    } catch(e){
+      panelStatus.textContent = 'Durata salvata qui, ma non è stato possibile aggiornare il backend.';
+    }
+  } else {
+    panelStatus.textContent = countdownSeconds > 0
+      ? ('Durata countdown impostata a ' + countdownSeconds + ' secondi.')
+      : 'Countdown disattivato.';
+  }
 });
 
 document.getElementById('savePinBtn').addEventListener('click', () => {

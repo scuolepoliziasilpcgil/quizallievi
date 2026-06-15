@@ -202,6 +202,23 @@
   .stat-dot{ width:.55rem; height:.55rem; border-radius:50%; flex:0 0 auto; }
   .stat-dot.green{ background:#4FA66B; }
   .stat-dot.yellow{ background:var(--giallo); }
+  .countdown-bar{
+    position:absolute;
+    top:0; left:0;
+    height:5px;
+    width:100%;
+    background:var(--giallo);
+    transform-origin:left center;
+    z-index:5;
+    opacity:.9;
+  }
+  .countdown-bar.running{
+    animation:countdownShrink linear forwards;
+  }
+  @keyframes countdownShrink{
+    from{transform:scaleX(1);}
+    to{transform:scaleX(0);}
+  }
   .config-warning{
     max-width:34ch;
     font-size:.95rem;
@@ -211,6 +228,7 @@
 </style>
 </head>
 <body>
+<div class="countdown-bar" id="countdownBar" style="display:none"></div>
 <header id="pageHeader">SILP CGIL · Corso Allievi Agenti</header>
 <img class="top-logo" src="logo.jpg" alt="">
 <main id="main">
@@ -229,12 +247,27 @@ const main = document.getElementById('main');
 const statsBar = document.getElementById('statsBar');
 const statConnessi = document.getElementById('statConnessi');
 const statRisposte = document.getElementById('statRisposte');
+const countdownBar = document.getElementById('countdownBar');
 let lastSessionId = null;
 let lastSlide = null;
 let answeredKey = null;
+let countdownSeconds = 15;
 
 // Identificatore univoco per questo browser/allievo
 const CLIENT_ID = 'C' + Math.random().toString(36).slice(2) + Date.now().toString(36);
+
+function startCountdown(){
+  if(!countdownBar) return;
+  if(countdownSeconds <= 0){ countdownBar.style.display = 'none'; return; }
+  countdownBar.style.display = 'block';
+  countdownBar.classList.remove('running');
+  countdownBar.style.animationDuration = countdownSeconds + 's';
+  void countdownBar.offsetWidth; // forza reflow per ripartire
+  countdownBar.classList.add('running');
+}
+function hideCountdown(){
+  if(countdownBar){ countdownBar.classList.remove('running'); countdownBar.style.display = 'none'; }
+}
 
 function storageKey(sessionId, slide){
   return 'risposta_' + sessionId + '_' + slide;
@@ -320,6 +353,7 @@ function renderSlide(sessionId, slideIndex){
 
 function submitAnswer(sessionId, slideIndex, value){
   localStorage.setItem(storageKey(sessionId, slideIndex), value);
+  hideCountdown();
   main.innerHTML = `<div class="confirm">Risposta inviata ✅</div>`;
   fetch(GAS_URL, {
     method:'POST', headers:{'Content-Type':'text/plain'},
@@ -361,6 +395,9 @@ async function poll(){
   try{
     const res = await fetch(GAS_URL + '?action=state');
     const data = await res.json();
+    if(data.countdown !== undefined && data.countdown !== null){
+      countdownSeconds = Number(data.countdown);
+    }
     if(data.corso && data.corso !== lastCorso){
       lastCorso = data.corso;
       pageHeader.textContent = 'SILP CGIL · ' + lastCorso + '° Corso Allievi Agenti';
@@ -372,6 +409,14 @@ async function poll(){
       renderSlide(data.sessionId, data.slide);
       sendPing();      // ping immediato sul nuovo stato
       updateStats();   // aggiorna subito i contatori
+      // countdown solo sulle slide domanda (quiz, sondaggio, wordcloud)
+      const sl = slides[data.slide];
+      const already = sl ? localStorage.getItem(storageKey(data.sessionId, data.slide)) : null;
+      if(sl && (sl.type === 'quiz' || sl.type === 'sondaggio' || sl.type === 'wordcloud') && already === null){
+        startCountdown();
+      } else {
+        hideCountdown();
+      }
     }
   } catch(err){
     // silenzioso, riprova al prossimo giro
