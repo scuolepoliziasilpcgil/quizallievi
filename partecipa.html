@@ -218,6 +218,23 @@
     from{transform:scaleX(1);}
     to{transform:scaleX(0);}
   }
+  .contact-cta{
+    display:block;
+    margin-top:2rem;
+    padding:1rem 1.4rem;
+    background:var(--rosso);
+    color:#fff;
+    border-radius:14px;
+    font-weight:700;
+    font-size:.95rem;
+    line-height:1.45;
+    text-decoration:none;
+    max-width:28ch;
+    text-align:center;
+    animation:standbyIn .5s ease .2s both;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+  }
+  .contact-cta:active{opacity:.85;}
   .config-warning{
     max-width:34ch;
     font-size:.95rem;
@@ -297,7 +314,16 @@ function renderSlide(sessionId, slideIndex){
     return;
   }
   if(s.type === 'closing'){
-    renderStandby('Grazie!', 'SILP CGIL è il vostro riferimento da oggi in poi.');
+    main.parentElement.style.background = '';
+    main.parentElement.style.color = '';
+    hideCountdown();
+    main.innerHTML = `
+      <div class="standby-title">Grazie!</div>
+      <div class="standby-sub">SILP CGIL è il vostro riferimento da oggi in poi.</div>
+      <a class="contact-cta" href="https://scuolepoliziasilpcgil.github.io/contatti/index.html" target="_blank">
+        Clicca qui per essere ricontattato in vista delle assegnazioni e su dubbi o informazioni
+      </a>
+    `;
     return;
   }
   if(s.type === 'pausa'){
