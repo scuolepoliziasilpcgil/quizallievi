@@ -15,6 +15,9 @@
     --giallo:#FFE699;
     --verde:#4FA66B;
     --crema:#F7F3E8;
+    --accent-p1:#9FD8FF;
+    --accent-p2:#FFD27A;
+    --accent-p3:#B6E3C0;
   }
   *{box-sizing:border-box;}
   html,body{margin:0;height:100%;}
@@ -113,9 +116,21 @@
     transform:translateY(0);
     pointer-events:auto;
   }
+  /* entrata animata del contenuto della slide attiva */
+  .slide.active > *{
+    animation:slideInUp .5s cubic-bezier(.16,.84,.44,1) both;
+  }
+  @keyframes slideInUp{
+    from{opacity:0; transform:translateY(22px);}
+    to{opacity:1; transform:translateY(0);}
+  }
   .slide[data-bg="deep"]{background:radial-gradient(circle at 50% 30%, var(--blu) 0%, var(--blu-deep) 70%);}
   .slide[data-bg="blu"]{background:var(--blu);}
   .slide[data-bg="giallo"]{background:var(--giallo); color:var(--blu-deep);}
+  /* accento colore per periodo: alone radiale tenue dietro le domande */
+  .slide[data-accent="p1"]{background:radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-p1) 22%, var(--blu)) 0%, var(--blu-deep) 72%);}
+  .slide[data-accent="p2"]{background:radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-p2) 20%, var(--blu)) 0%, var(--blu-deep) 72%);}
+  .slide[data-accent="p3"]{background:radial-gradient(circle at 50% 28%, color-mix(in srgb, var(--accent-p3) 22%, var(--blu)) 0%, var(--blu-deep) 72%);}
   /* TITLE SLIDE */
   .eyebrow{
     font-family:'IBM Plex Mono',monospace;
@@ -312,8 +327,57 @@
     left:0; top:0; bottom:0;
     width:0%;
     background:rgba(79,166,107,.35);
-    transition:width .4s ease;
+    transition:width .9s cubic-bezier(.22,.86,.4,1);
   }
+  .slide[data-accent="p1"] .option .bar-fill{background:color-mix(in srgb, var(--accent-p1) 40%, transparent);}
+  .slide[data-accent="p2"] .option .bar-fill{background:color-mix(in srgb, var(--accent-p2) 42%, transparent);}
+  .slide[data-accent="p3"] .option .bar-fill{background:color-mix(in srgb, var(--accent-p3) 42%, transparent);}
+  /* COUNTDOWN VISIVO */
+  .countdown-bar{
+    position:absolute;
+    top:0; left:0;
+    height:5px;
+    width:100%;
+    background:var(--giallo);
+    transform-origin:left center;
+    z-index:5;
+    opacity:.9;
+  }
+  .slide[data-bg="deep"] .countdown-bar, .slide[data-accent] .countdown-bar{background:var(--giallo);}
+  .countdown-bar.running{
+    animation:countdownShrink linear forwards;
+  }
+  @keyframes countdownShrink{
+    from{transform:scaleX(1);}
+    to{transform:scaleX(0);}
+  }
+  /* LOGHI PULSANTI sulla slide titolo */
+  .heartbeat-logo{
+    animation:heartbeat 1.8s ease-in-out infinite;
+  }
+  .qr-row .heartbeat-logo:last-child{animation-delay:.9s;}
+  .title-slide-logos{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:3rem;
+    margin-bottom:2rem;
+    flex-wrap:wrap;
+  }
+  .title-slide-logos .logo-flank{
+    width:clamp(7rem,14vw,12rem);
+    height:auto;
+    animation:heartbeat 1.8s ease-in-out infinite;
+  }
+  .title-slide-logos .logo-flank:nth-child(2){animation-delay:.9s;}
+  @keyframes heartbeat{
+    0%, 100%{transform:scale(1);}
+    15%{transform:scale(1.08);}
+    30%{transform:scale(1);}
+    45%{transform:scale(1.05);}
+    60%{transform:scale(1);}
+  }
+  /* SCHERMATA ATTESA VIVA (tra le slide, lato relatore non serve, qui per coerenza) */
   /* TOOLBAR (reveal + results) */
   .toolbar{
     display:flex;
@@ -626,6 +690,11 @@
     <div class="row">
       <button class="ghost-btn" id="savePinBtn" style="border-color:var(--crema); color:var(--crema);">Salva PIN</button>
       <button class="ghost-btn" id="newSessionBtn" style="border-color:var(--crema); color:var(--crema);">Nuova sessione</button>
+    </div>
+    <label for="countdownInput">Durata countdown (secondi)</label>
+    <input type="number" id="countdownInput" min="0" placeholder="10" value="10">
+    <div class="row">
+      <button class="ghost-btn" id="saveCountdownBtn" style="border-color:var(--crema); color:var(--crema);">Salva durata</button>
     </div>
     <div class="qr-label">QR code per gli allievi</div>
     <div class="qr-block" id="qrBlock" style="margin-top:.6rem;"></div>
@@ -1890,6 +1959,8 @@ let sessionId = null;
 let resultsTimer = null;
 let activeCloud = null;
 let courseNumber = localStorage.getItem('courseNumber') || '';
+let countdownSeconds = parseInt(localStorage.getItem('countdownSeconds') || '10', 10);
+let prevCloudWords = {};
 
 const stage = document.getElementById('stage');
 const sectionLabelEl = document.getElementById('sectionLabel');
@@ -1952,9 +2023,9 @@ function buildSlideEl(s, idx){
       <div class="qr-block">
         <div class="qr-label">Inquadrate il QR code per partecipare</div>
         <div class="qr-row">
-          <img class="logo-flank" src="logo.jpg" alt="">
+          <img class="logo-flank heartbeat-logo" src="logo.jpg" alt="">
           <img src="https://api.qrserver.com/v1/create-qr-code/?size=180x180&data=${encodeURIComponent(participantUrl)}" width="180" height="180" alt="QR code">
-          <img class="logo-flank" src="logo.jpg" alt="">
+          <img class="logo-flank heartbeat-logo" src="logo.jpg" alt="">
         </div>
         <div class="qr-url">${participantUrl}</div>
       </div>
@@ -1995,9 +2066,13 @@ function buildSlideEl(s, idx){
     `;
   } else {
     el.dataset.bg = 'blu';
+    if(s.section === 'p1') el.dataset.accent = 'p1';
+    else if(s.section === 'p2') el.dataset.accent = 'p2';
+    else if(s.section === 'p3') el.dataset.accent = 'p3';
     const badge = badgeLabels[s.type];
     const hasOptions = s.options && s.options.length > 0;
-    let html = `<div class="badge ${badge.cls}">${badge.text}</div>`;
+    let html = `<div class="countdown-bar" data-countdown></div>`;
+    html += `<div class="badge ${badge.cls}">${badge.text}</div>`;
     html += `<h1 class="question">${s.q}</h1>`;
     if(s.hint) html += `<div class="hint">${s.hint}</div>`;
 
@@ -2048,6 +2123,9 @@ function render(){
   if(pillRisposte) pillRisposte.style.display = s.type === 'title' ? 'none' : '';
 
   const activeSlide = stage.querySelector('.slide.active');
+
+  // Avvia il countdown visivo sulle slide domanda (quiz, sondaggio, wordcloud)
+  startCountdown(activeSlide);
 
   const revealBtn = activeSlide.querySelector('[data-action="reveal"]');
   if(revealBtn){
@@ -2212,6 +2290,12 @@ function applyResults(slideIndex, data){
     canvas.style.display = 'block';
     activeCloud = {canvas, entries};
     drawCloud(canvas, entries);
+    // effetto pop se sono arrivate parole nuove o conteggi cambiati
+    const sig = JSON.stringify(merged);
+    if(prevCloudWords[slideIndex] !== undefined && prevCloudWords[slideIndex] !== sig){
+      popCanvas(canvas);
+    }
+    prevCloudWords[slideIndex] = sig;
   }
 }
 
@@ -2246,6 +2330,28 @@ window.addEventListener('resize', () => {
   if(activeCloud) drawCloud(activeCloud.canvas, activeCloud.entries);
 });
 
+// ── COUNTDOWN VISIVO ─────────────────────────────────────────
+function startCountdown(activeSlide){
+  if(!activeSlide) return;
+  const bar = activeSlide.querySelector('[data-countdown]');
+  if(!bar) return;
+  if(countdownSeconds <= 0){ bar.style.display = 'none'; return; }
+  // reset e riavvio dell'animazione
+  bar.style.display = 'block';
+  bar.classList.remove('running');
+  bar.style.animationDuration = countdownSeconds + 's';
+  // forza reflow per far ripartire l'animazione da capo
+  void bar.offsetWidth;
+  bar.classList.add('running');
+}
+
+// ── EFFETTO POP SULLA NUVOLA ─────────────────────────────────
+function popCanvas(canvas){
+  canvas.style.transition = 'transform .25s cubic-bezier(.34,1.56,.64,1)';
+  canvas.style.transform = 'scale(1.04)';
+  setTimeout(() => { canvas.style.transform = 'scale(1)'; }, 250);
+}
+
 function startResultsPolling(){
   stopResultsPolling();
   const idx = current;
@@ -2264,12 +2370,14 @@ function stopResultsPolling(){
 const overlay = document.getElementById('overlay');
 const corsoInput = document.getElementById('corsoInput');
 const pinInput = document.getElementById('pinInput');
+const countdownInput = document.getElementById('countdownInput');
 const panelStatus = document.getElementById('panelStatus');
 const qrBlock = document.getElementById('qrBlock');
 
 document.getElementById('settingsBtn').addEventListener('click', () => {
   corsoInput.value = courseNumber;
   pinInput.value = getPin();
+  countdownInput.value = countdownSeconds;
   buildQrBlock();
   overlay.classList.add('open');
   refreshSession().then(() => {
@@ -2280,6 +2388,15 @@ document.getElementById('settingsBtn').addEventListener('click', () => {
   });
 });
 document.getElementById('closeSettingsBtn').addEventListener('click', () => overlay.classList.remove('open'));
+
+document.getElementById('saveCountdownBtn').addEventListener('click', () => {
+  const val = parseInt(countdownInput.value, 10);
+  countdownSeconds = isNaN(val) || val < 0 ? 0 : val;
+  localStorage.setItem('countdownSeconds', String(countdownSeconds));
+  panelStatus.textContent = countdownSeconds > 0
+    ? ('Durata countdown impostata a ' + countdownSeconds + ' secondi.')
+    : 'Countdown disattivato.';
+});
 
 document.getElementById('savePinBtn').addEventListener('click', () => {
   localStorage.setItem('presenterPin', pinInput.value.trim());
