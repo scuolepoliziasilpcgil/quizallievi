@@ -203,13 +203,12 @@
   .stat-dot.green{ background:#4FA66B; }
   .stat-dot.yellow{ background:var(--giallo); }
   .countdown-bar{
-    position:absolute;
-    top:0; left:0;
+    display:block;
     height:5px;
     width:100%;
     background:var(--giallo);
     transform-origin:left center;
-    z-index:5;
+    flex:0 0 auto;
     opacity:.9;
   }
   .countdown-bar.running{
@@ -228,12 +227,12 @@
 </style>
 </head>
 <body>
-<div class="countdown-bar" id="countdownBar" style="display:none"></div>
 <header id="pageHeader">SILP CGIL · Corso Allievi Agenti</header>
 <img class="top-logo" src="logo.jpg" alt="">
 <main id="main">
   <div class="standby-title">Connessione…</div>
 </main>
+<div class="countdown-bar" id="countdownBar" style="display:none"></div>
 <div class="stats-bar" id="statsBar" style="display:none">
   <div class="stat-item"><span class="stat-dot green"></span><span id="statConnessi">—</span> connessi</div>
   <div class="stat-item"><span class="stat-dot yellow"></span><span id="statRisposte">—</span> risposte</div>
