@@ -1917,7 +1917,7 @@ async function updateStats(){
 function startStatsPolling(){
   stopStatsPolling();
   updateStats();
-  statsTimer = setInterval(updateStats, 4000);
+  statsTimer = setInterval(updateStats, 2000);
 }
 
 function stopStatsPolling(){

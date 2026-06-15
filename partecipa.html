@@ -340,6 +340,8 @@ async function poll(){
       lastSessionId = data.sessionId;
       lastSlide = data.slide;
       renderSlide(data.sessionId, data.slide);
+      sendPing();      // ping immediato sul nuovo stato
+      updateStats();   // aggiorna subito i contatori
     }
   } catch(err){
     // silenzioso, riprova al prossimo giro
@@ -348,8 +350,8 @@ async function poll(){
 
 poll();
 setInterval(poll, 5000);
-setInterval(sendPing, 10000);   // ping ogni 10 secondi
-setInterval(updateStats, 4000); // aggiorna contatori ogni 4 secondi
+setInterval(sendPing, 6000);    // ping ogni 6 secondi
+setInterval(updateStats, 2000); // aggiorna contatori ogni 2 secondi
 sendPing();                     // ping immediato all'apertura
 </script>
 </body>
