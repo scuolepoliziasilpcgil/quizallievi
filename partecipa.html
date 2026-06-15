@@ -158,6 +158,21 @@
     font-size:.7rem;
     opacity:.4;
   }
+  .stats-bar{
+    display:flex;
+    justify-content:center;
+    gap:1.4rem;
+    padding:.55rem 1rem;
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem;
+    opacity:.7;
+    background:rgba(255,255,255,.05);
+    border-top:1px solid rgba(247,243,232,.08);
+  }
+  .stat-item{ display:flex; align-items:center; gap:.35rem; }
+  .stat-dot{ width:.55rem; height:.55rem; border-radius:50%; flex:0 0 auto; }
+  .stat-dot.green{ background:#4FA66B; }
+  .stat-dot.yellow{ background:var(--giallo); }
   .config-warning{
     max-width:34ch;
     font-size:.95rem;
@@ -172,15 +187,25 @@
 <main id="main">
   <div class="standby-title">Connessione…</div>
 </main>
+<div class="stats-bar" id="statsBar" style="display:none">
+  <div class="stat-item"><span class="stat-dot green"></span><span id="statConnessi">—</span> connessi</div>
+  <div class="stat-item"><span class="stat-dot yellow"></span><span id="statRisposte">—</span> risposte</div>
+</div>
 <footer>Aggiornamento automatico ogni pochi secondi</footer>
 
 <script src="slides_data.js"></script>
 <script src="config.js"></script>
 <script>
 const main = document.getElementById('main');
+const statsBar = document.getElementById('statsBar');
+const statConnessi = document.getElementById('statConnessi');
+const statRisposte = document.getElementById('statRisposte');
 let lastSessionId = null;
 let lastSlide = null;
 let answeredKey = null;
+
+// Identificatore univoco per questo browser/allievo
+const CLIENT_ID = 'C' + Math.random().toString(36).slice(2) + Date.now().toString(36);
 
 function storageKey(sessionId, slide){
   return 'risposta_' + sessionId + '_' + slide;
@@ -267,9 +292,32 @@ function submitAnswer(sessionId, slideIndex, value){
   localStorage.setItem(storageKey(sessionId, slideIndex), value);
   main.innerHTML = `<div class="confirm">Risposta inviata ✅</div>`;
   fetch(GAS_URL, {
-    method:'POST',
-    body: JSON.stringify({ action:'vote', sessionId: sessionId, slide: slideIndex, value: value })
+    method:'POST', headers:{'Content-Type':'text/plain'},
+    body: JSON.stringify({ action:'vote', sessionId: sessionId, slide: slideIndex, value: value, clientId: CLIENT_ID })
   }).catch(()=>{});
+}
+
+async function sendPing(){
+  if(!lastSessionId) return;
+  try {
+    await fetch(GAS_URL, {
+      method:'POST', headers:{'Content-Type':'text/plain'},
+      body: JSON.stringify({ action:'ping', clientId: CLIENT_ID, sessionId: lastSessionId, slide: lastSlide })
+    });
+  } catch(e){}
+}
+
+async function updateStats(){
+  if(!lastSessionId) return;
+  try {
+    const res = await fetch(GAS_URL + '?action=stats&session=' + encodeURIComponent(lastSessionId) + '&slide=' + encodeURIComponent(lastSlide));
+    const data = await res.json();
+    if(data.connessi !== undefined){
+      statsBar.style.display = 'flex';
+      statConnessi.textContent = data.connessi;
+      statRisposte.textContent = data.risposte;
+    }
+  } catch(e){}
 }
 
 let lastCorso = null;
@@ -300,6 +348,9 @@ async function poll(){
 
 poll();
 setInterval(poll, 5000);
+setInterval(sendPing, 30000);   // ping ogni 30 secondi
+setInterval(updateStats, 8000); // aggiorna contatori ogni 8 secondi
+sendPing();                     // ping immediato all'apertura
 </script>
 </body>
 </html>

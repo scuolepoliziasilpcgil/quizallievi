@@ -53,6 +53,8 @@
   }
   .topbar-section{flex:1;text-align:center;}
   .topbar-counter{font-weight:500; flex:0 0 auto;}
+  .stats-badge{display:flex; gap:.5rem; align-items:center; flex:0 0 auto;}
+  .stat-pill{font-size:.72rem; font-family:'IBM Plex Mono',monospace; letter-spacing:.04em;}
   .icon-btn{
     background:transparent;
     border:1px solid rgba(247,243,232,.35);
@@ -572,6 +574,10 @@
   </span>
   <span class="topbar-section" id="sectionLabel"></span>
   <span class="topbar-counter" id="counter"></span>
+  <span class="stats-badge" id="statsBadge" style="display:none">
+    <span class="stat-pill green" id="pConnessi">🟢 —</span>
+    <span class="stat-pill yellow" id="pRisposte">✅ —</span>
+  </span>
   <button class="icon-btn" id="settingsBtn" aria-label="Impostazioni" title="Impostazioni e QR code">⚙</button>
 </div>
 
@@ -1866,6 +1872,33 @@ const stage = document.getElementById('stage');
 const sectionLabelEl = document.getElementById('sectionLabel');
 const counterEl = document.getElementById('counter');
 const trackEl = document.getElementById('track');
+const statsBadge = document.getElementById('statsBadge');
+const pConnessi = document.getElementById('pConnessi');
+const pRisposte = document.getElementById('pRisposte');
+let statsTimer = null;
+
+async function updateStats(){
+  if(!sessionId) return;
+  try{
+    const res = await fetch(GAS_URL + '?action=stats&session=' + encodeURIComponent(sessionId) + '&slide=' + encodeURIComponent(current));
+    const data = await res.json();
+    if(data.connessi !== undefined){
+      statsBadge.style.display = 'flex';
+      pConnessi.textContent = '🟢 ' + data.connessi;
+      pRisposte.textContent = '✅ ' + data.risposte;
+    }
+  } catch(e){}
+}
+
+function startStatsPolling(){
+  stopStatsPolling();
+  updateStats();
+  statsTimer = setInterval(updateStats, 8000);
+}
+
+function stopStatsPolling(){
+  if(statsTimer){ clearInterval(statsTimer); statsTimer = null; }
+}
 
 function letterFor(i){ return String.fromCharCode(65+i); }
 function getPin(){ return localStorage.getItem('presenterPin') || ''; }
@@ -2291,6 +2324,7 @@ function buildQrBlock(){
 
 refreshSession();
 render();
+startStatsPolling();
 </script>
 </body>
 </html>
