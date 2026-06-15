@@ -1871,7 +1871,7 @@ function buildSlideEl(s, idx){
     `;
   } else if(s.type === 'closing'){
     el.dataset.bg = 'deep';
-    const contactUrl = location.href.replace(/presentazione\.html.*$/, '') + 'contatti/index.html';
+    const contactUrl = 'https://scuolepoliziasilpcgil.github.io/contatti/index.html';
     el.innerHTML = `
       <div class="closing-logos">
         <img class="logo-flank" src="logo.jpg" alt="">
@@ -1886,9 +1886,8 @@ function buildSlideEl(s, idx){
     `;
   } else if(s.type === 'pausa'){
     el.dataset.bg = 'giallo';
-    const contactUrl = location.href.replace(/presentazione\.html.*$/, '') + 'contatti/index.html';
+    const contactUrl = 'https://scuolepoliziasilpcgil.github.io/contatti/index.html';
     el.innerHTML = `
-      <div class="pausa-sub">${s.label}</div>
       <h1 class="pausa-title">Pausa</h1>
       <ul class="pausa-list">${s.list.map(i=>`<li>${i}</li>`).join('')}</ul>
       <div class="pausa-contact">
