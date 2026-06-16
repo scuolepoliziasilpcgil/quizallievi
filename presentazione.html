@@ -131,6 +131,43 @@
   .slide[data-accent="p1"]{background:radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--accent-p1) 55%, var(--blu)) 0%, var(--blu-deep) 78%);}
   .slide[data-accent="p2"]{background:radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--accent-p2) 52%, var(--blu)) 0%, var(--blu-deep) 78%);}
   .slide[data-accent="p3"]{background:radial-gradient(circle at 50% 24%, color-mix(in srgb, var(--accent-p3) 55%, var(--blu)) 0%, var(--blu-deep) 78%);}
+  /* NARRAZIONE */
+  .narrazione-motivo{
+    font-family:'IBM Plex Mono',monospace;
+    font-size:.72rem;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    opacity:.55;
+    margin-bottom:.6rem;
+  }
+  .narrazione-titolo{
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:800;
+    font-size:clamp(1.6rem,4vw,2.6rem);
+    line-height:1.15;
+    margin-bottom:1.2rem;
+    color:var(--crema);
+  }
+  .narrazione-testo{
+    font-size:clamp(.95rem,2.2vw,1.2rem);
+    line-height:1.65;
+    max-width:54ch;
+    opacity:.88;
+  }
+  .narrazione-num{
+    position:absolute;
+    right:3vw;
+    bottom:3vh;
+    font-family:'Space Grotesk',sans-serif;
+    font-weight:900;
+    font-size:clamp(5rem,14vw,11rem);
+    color:var(--rosso);
+    opacity:.18;
+    line-height:1;
+    user-select:none;
+    pointer-events:none;
+    z-index:0;
+  }
   /* TITLE SLIDE */
   .eyebrow{
     font-family:'IBM Plex Mono',monospace;
@@ -2053,6 +2090,18 @@ function buildSlideEl(s, idx){
         </div>
       </div>
     `;
+  } else if(s.type === 'narrazione'){
+    el.dataset.bg = 'deep';
+    if(s.section === 'p1') el.dataset.accent = 'p1';
+    else if(s.section === 'p2') el.dataset.accent = 'p2';
+    else if(s.section === 'p3') el.dataset.accent = 'p3';
+    const motivoLabel = s.motivo ? `Il ${['primo','secondo','terzo','quarto','quinto','sesto','settimo','ottavo','nono','decimo'][s.motivo-1]} buon motivo per iscriverti al SILP CGIL` : '';
+    el.innerHTML = `
+      ${s.motivo ? `<div class="narrazione-num">${s.motivo}</div>` : ''}
+      ${motivoLabel ? `<div class="narrazione-motivo">${motivoLabel}</div>` : ''}
+      <h1 class="narrazione-titolo">${s.titolo}</h1>
+      <div class="narrazione-testo">${s.testo}</div>
+    `;
   } else if(s.type === 'pausa'){
     el.dataset.bg = 'giallo';
     const contactUrl = 'https://scuolepoliziasilpcgil.github.io/contatti/index.html';
@@ -2119,8 +2168,10 @@ function render(){
   const s = slides[current];
   sectionLabelEl.textContent = s.section ? sectionLabels[s.section] : (s.type==='title' ? 'Inizio' : 'Fine');
   counterEl.textContent = s.num ? `Domanda ${s.num} di 20` : '';
-  // sulla slide iniziale mostra solo connessi, sulle altre anche risposte
-  if(pillRisposte) pillRisposte.style.display = s.type === 'title' ? 'none' : '';
+  // sui tipi senza interazione mostra solo connessi, sulle domande anche risposte
+  const noInteraction = s.type === 'title' || s.type === 'narrazione' || s.type === 'pausa' || s.type === 'closing';
+  if(pillRisposte) pillRisposte.style.display = noInteraction ? 'none' : '';
+  if(resultsBtn) resultsBtn.style.display = noInteraction ? 'none' : '';
 
   const activeSlide = stage.querySelector('.slide.active');
 
