@@ -2171,9 +2171,12 @@ function render(){
   // sui tipi senza interazione mostra solo connessi, sulle domande anche risposte
   const noInteraction = s.type === 'title' || s.type === 'narrazione' || s.type === 'pausa' || s.type === 'closing';
   if(pillRisposte) pillRisposte.style.display = noInteraction ? 'none' : '';
-  if(resultsBtn) resultsBtn.style.display = noInteraction ? 'none' : '';
 
   const activeSlide = stage.querySelector('.slide.active');
+
+  // resultsBtn è dentro la slide attiva, lo cerco dopo che è stata creata
+  const resultsBtn = activeSlide ? activeSlide.querySelector('[data-action="results"]') : null;
+  if(resultsBtn) resultsBtn.style.display = noInteraction ? 'none' : '';
 
   const revealBtn = activeSlide.querySelector('[data-action="reveal"]');
   if(revealBtn){
@@ -2184,7 +2187,6 @@ function render(){
     });
   }
 
-  const resultsBtn = activeSlide.querySelector('[data-action="results"]');
   if(resultsBtn){
     resultsBtn.addEventListener('click', () => {
       const showing = resultsBtn.dataset.open === '1';
