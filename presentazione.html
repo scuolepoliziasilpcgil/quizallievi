@@ -2287,6 +2287,7 @@ async function pushSlide(index){
   if(!sessionId) await refreshSession();
   fetch(GAS_URL, {
     method:'POST',
+    headers:{'Content-Type':'text/plain'},
     body: JSON.stringify({ action:'setSlide', slide:index, pin:getPin() })
   }).catch(()=>{});
 }
@@ -2483,6 +2484,7 @@ document.getElementById('saveCorsoBtn').addEventListener('click', async () => {
   try{
     const res = await fetch(GAS_URL, {
       method:'POST',
+      headers:{'Content-Type':'text/plain'},
       body: JSON.stringify({ action:'setCorso', corso:value, pin:getPin() })
     });
     const data = await res.json();
@@ -2505,6 +2507,7 @@ document.getElementById('newSessionBtn').addEventListener('click', async () => {
   try{
     const res = await fetch(GAS_URL, {
       method:'POST',
+      headers:{'Content-Type':'text/plain'},
       body: JSON.stringify({ action:'newSession', pin:getPin(), corso:courseNumber })
     });
     const data = await res.json();
