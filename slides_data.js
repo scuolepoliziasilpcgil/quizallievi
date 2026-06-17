@@ -150,7 +150,7 @@ options:['Sì, e mi sono pentito','Sì, ma conto sull\'alloggio di servizio','No
 
 { type:'sondaggio', section:'p3', num:13,
 q:'Hai già in mente una sistemazione alloggiativa?',
-options:['Sì, penso di alloggiare con qualche collega in appartamento','No, conto sull\'alloggio di servizio','Non ci ho ancora pensato'] },
+options:['Sì, penso di alloggiare con qualche collega in appartamento','Conto sull\'alloggio di servizio','Scelgo solo sedi con alloggi','Non ci ho ancora pensato'] },
 
 { type:'sondaggio', section:'p3', num:14,
 q:'Hai un fidanzato o una fidanzata che dovrà seguirti, o state già litigando sulla sede?',
@@ -174,7 +174,7 @@ answer:'Vecchiaia: 60 anni di età e 36 anni di contributi. Anzianità: 58 anni 
 
 { type:'quiz', section:'p3', num:17,
 q:'Abbiamo una previdenza complementare integrativa?',
-options:['No','Sì','Dipende dalla data di assunzione'],
+options:['No','Sì','Dipende dalla data di assunzione','Non lo so'],
 answer:'Risposta a cura di Daniele.' },
 
 { type:'quiz', section:'p3', num:18,
@@ -184,7 +184,7 @@ answer:'Risposta a cura di Daniele.' },
 
 { type:'quiz', section:'p3', num:19,
 q:'Cos\'è la ricongiunzione dei contributi?',
-options:['Il riscatto degli anni prestati nelle forze armate','Il trasferimento di contributi previdenziali da una cassa all\'altra','Il riscatto della laurea'],
+options:['Il riscatto degli anni prestati nelle forze armate','Il trasferimento di contributi previdenziali da una cassa all\'altra','Il riscatto della laurea','Non lo so'],
 answer:'Risposta a cura di Daniele.' },
 
 { type:'quiz', section:'p3', num:20,
