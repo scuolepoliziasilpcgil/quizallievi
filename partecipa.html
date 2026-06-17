@@ -385,7 +385,17 @@ function renderSlide(sessionId, slideIndex){
     return;
   }
   if(s.type === 'pausa'){
-    renderStandby('Pausa', 'Approfittane per fare due chiacchiere con i delegati presenti in sala. Tra poco si ricomincia.', true);
+    main.parentElement.style.background = 'var(--giallo)';
+    main.parentElement.style.color = 'var(--blu-deep)';
+    hideCountdown();
+    main.innerHTML = `
+      <div class="standby-title">Pausa</div>
+      <div class="standby-sub">Approfittane per fare due chiacchiere con i delegati presenti in sala. Tra poco si ricomincia.</div>
+      <a class="contact-cta" href="https://scuolepoliziasilpcgil.github.io/contatti/index.html" target="_blank" style="margin-top:1.4rem; background:#C8102E; color:#fff;">
+        Lascia i tuoi contatti
+      </a>
+      <div class="standby-dots" style="margin-top:1rem;"><span></span><span></span><span></span></div>
+    `;
     return;
   }
 
