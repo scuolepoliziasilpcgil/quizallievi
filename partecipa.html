@@ -96,18 +96,18 @@
     max-width:420px;
   }
   .options.cloud-grid{
-    flex-direction:row;
-    flex-wrap:wrap;
-    gap:.55rem;
-    justify-content:center;
+    display:grid;
+    grid-template-columns:repeat(4, 1fr);
+    gap:.45rem;
+    width:100%;
     max-width:480px;
   }
   .options.cloud-grid .option-btn{
-    font-size:.88rem;
-    padding:.55rem .9rem;
-    border-radius:999px;
+    font-size:.78rem;
+    padding:.5rem .4rem;
+    border-radius:10px;
     text-align:center;
-    flex:0 0 auto;
+    flex:unset;
   }
   .option-btn.selected{
     background:var(--giallo);

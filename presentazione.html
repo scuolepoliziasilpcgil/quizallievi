@@ -607,6 +607,7 @@
   .track-group.g-p1, .track-group.g-p3{background:rgba(31,56,100,.5);}
   .track-group.g-pausa{background:rgba(255,230,153,.18);}
   .track-group.g-p2{background:rgba(200,16,46,.18);}
+  .track-dot.narrazione{opacity:.5;}
   .track-dot{
     width:.55rem;
     height:.55rem;
@@ -2121,11 +2122,14 @@ function buildSlideEl(s, idx){
     else if(s.section === 'p3') el.dataset.accent = 'p3';
     const badge = badgeLabels[s.type];
     const hasOptions = s.options && s.options.length > 0;
+    const isWordcloud = s.type === 'wordcloud';
     let html = `<div class="badge ${badge.cls}">${badge.text}</div>`;
     html += `<h1 class="question">${s.q}</h1>`;
     if(s.hint) html += `<div class="hint">${s.hint}</div>`;
 
-    if(hasOptions){
+    if(isWordcloud){
+      html += `<div class="cloud-wrap"><canvas class="cloud-canvas"></canvas><div class="cloud-empty">Nessuna risposta ancora.</div></div>`;
+    } else if(hasOptions){
       html += `<div class="options">${s.options.map((o,i)=>`
         <div class="option" data-key="${o.toLowerCase().trim().replace(/"/g,'&quot;')}">
           <div class="bar-fill"></div>
@@ -2133,12 +2137,12 @@ function buildSlideEl(s, idx){
           <span class="opt-text">${o}</span>
           <span class="opt-count"></span>
         </div>`).join('')}</div>`;
-    } else if(s.type === 'wordcloud' || (s.type === 'quiz' && !hasOptions)){
+    } else if(s.type === 'quiz' && !hasOptions){
       html += `<div class="cloud-wrap"><canvas class="cloud-canvas"></canvas><div class="cloud-empty">Nessuna risposta ancora.</div></div>`;
     }
 
     let toolbar = '';
-    if(hasOptions || s.type === 'wordcloud' || (s.type === 'quiz' && !hasOptions)){
+    if(isWordcloud || hasOptions || (s.type === 'quiz' && !hasOptions)){
       toolbar += `<button class="ghost-btn" data-action="results">Mostra risultati</button>`;
     }
     if(s.answer){
@@ -2249,14 +2253,30 @@ trackGroups.forEach(g => {
   slides.forEach((s, i) => {
     if(s.section === g.key){
       const dot = document.createElement('button');
-      dot.className = 'track-dot';
+      dot.className = 'track-dot' + (s.type === 'narrazione' ? ' narrazione' : '');
       dot.dataset.index = i;
-      dot.setAttribute('aria-label', s.num ? `Domanda ${s.num}` : g.key);
+      dot.setAttribute('aria-label', s.num ? `Domanda ${s.num}` : (s.titolo || g.key));
       dot.addEventListener('click', () => goTo(i));
       group.appendChild(dot);
     }
   });
-  trackEl.appendChild(group);
+  if(group.children.length > 0) trackEl.appendChild(group);
+});
+
+// Dot per title e closing
+[0, slides.length - 1].forEach(i => {
+  const s = slides[i];
+  const dot = document.createElement('button');
+  dot.className = 'track-dot narrazione';
+  dot.dataset.index = i;
+  dot.setAttribute('aria-label', s.type === 'title' ? 'Inizio' : 'Fine');
+  dot.addEventListener('click', () => goTo(i));
+  const wrapper = document.createElement('div');
+  wrapper.className = 'track-group g-p1';
+  wrapper.style.padding = '0 2px';
+  wrapper.appendChild(dot);
+  if(i === 0) trackEl.prepend(wrapper);
+  else trackEl.appendChild(wrapper);
 });
 
 function updateTrack(){
@@ -2307,11 +2327,12 @@ async function fetchResults(slideIndex){
 function applyResults(slideIndex, data){
   if(!data) return;
   const s = slides[slideIndex];
+  const isWordcloud = s.type === 'wordcloud';
   const hasOptions = s.options && s.options.length > 0;
   const activeSlide = stage.querySelector('.slide.active');
   if(!activeSlide) return;
 
-  if(hasOptions){
+  if(hasOptions && !isWordcloud){
     activeSlide.querySelectorAll('.option').forEach(optEl => {
       const key = optEl.dataset.key;
       const count = data.counts[key] || 0;
