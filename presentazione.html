@@ -742,6 +742,13 @@
     <div class="row">
       <button class="ghost-btn" id="saveCountdownBtn" style="border-color:var(--crema); color:var(--crema);">Salva durata</button>
     </div>
+    <label for="terzoNomeInput">Terzo contatto WhatsApp — Nome</label>
+    <input type="text" id="terzoNomeInput" placeholder="Es. Marco">
+    <label for="terzoNumeroInput">Numero di cellulare (con prefisso, es. 3331234567)</label>
+    <input type="tel" id="terzoNumeroInput" placeholder="3331234567">
+    <div class="row">
+      <button class="ghost-btn" id="saveTerzoBtn" style="border-color:var(--crema); color:var(--crema);">Salva terzo contatto</button>
+    </div>
     <div class="qr-label">QR code per gli allievi</div>
     <div class="qr-block" id="qrBlock" style="margin-top:.6rem;"></div>
     <div class="status" id="panelStatus">Sessione non verificata.</div>
@@ -2451,6 +2458,8 @@ const overlay = document.getElementById('overlay');
 const corsoInput = document.getElementById('corsoInput');
 const pinInput = document.getElementById('pinInput');
 const countdownInput = document.getElementById('countdownInput');
+const terzoNomeInput = document.getElementById('terzoNomeInput');
+const terzoNumeroInput = document.getElementById('terzoNumeroInput');
 const panelStatus = document.getElementById('panelStatus');
 const qrBlock = document.getElementById('qrBlock');
 
@@ -2458,6 +2467,8 @@ document.getElementById('settingsBtn').addEventListener('click', () => {
   corsoInput.value = courseNumber;
   pinInput.value = getPin();
   countdownInput.value = countdownSeconds;
+  if(terzoNomeInput) terzoNomeInput.value = localStorage.getItem('terzoNome') || '';
+  if(terzoNumeroInput) terzoNumeroInput.value = localStorage.getItem('terzoNumero') || '';
   buildQrBlock();
   overlay.classList.add('open');
   refreshSession().then(() => {
@@ -2467,6 +2478,34 @@ document.getElementById('settingsBtn').addEventListener('click', () => {
       : 'Backend non configurato: impostare GAS_URL in config.js.';
   });
 });
+document.getElementById('saveTerzoBtn').addEventListener('click', async () => {
+  const nome = terzoNomeInput.value.trim();
+  const numero = terzoNumeroInput.value.trim().replace(/\s+/g,'');
+  localStorage.setItem('terzoNome', nome);
+  localStorage.setItem('terzoNumero', numero);
+  panelStatus.textContent = 'Salvataggio terzo contatto…';
+  if(configured()){
+    try{
+      const res = await fetch(GAS_URL, {
+        method:'POST', headers:{'Content-Type':'text/plain'},
+        body: JSON.stringify({ action:'setThirdContact', nome, numero, pin: getPin() })
+      });
+      const data = await res.json();
+      if(data.error){
+        panelStatus.textContent = 'Salvato in locale, backend: ' + data.error;
+        return;
+      }
+      panelStatus.textContent = nome
+        ? ('Terzo contatto salvato: ' + nome + ' (' + (numero || 'nessun numero') + ')')
+        : 'Terzo contatto rimosso.';
+    } catch(e){
+      panelStatus.textContent = 'Salvato in locale, backend non raggiunto.';
+    }
+  } else {
+    panelStatus.textContent = nome ? 'Terzo contatto salvato in locale.' : 'Terzo contatto rimosso.';
+  }
+});
+
 document.getElementById('closeSettingsBtn').addEventListener('click', () => overlay.classList.remove('open'));
 
 document.getElementById('saveCountdownBtn').addEventListener('click', async () => {
