@@ -34,9 +34,10 @@ q:'Con una parola. In quale tipo di reparto ti piacerebbe lavorare.',
 options:['Volante','Squadra Mobile','Polizia Stradale','Polizia Ferroviaria','Polizia di Frontiera','Scientifica','DIGOS','Anticrimine','Cinofili','Reparto Mobile','Volo','Artificieri','NOCS','Tiratori Scelti','Cavalleria','Nautica','Postale','Corpo di Guardia'],
 maxSelect:2 },
 
-{ type:'sondaggio', section:'p1', num:3,
-q:'Quando pensi alle dieci preferenze da compilare, cosa provi?',
-options:['Ansia totale','Eccitazione','Andrà come andrà','Sto già studiando le mappe'] },
+{ type:'wordcloud', section:'p1', num:3,
+q:'Con una parola. In quale città ti piacerebbe prestare servizio.',
+options:['Roma','Milano','Napoli','Torino','Palermo','Genova','Bologna','Firenze','Bari','Catania','Venezia','Verona','Messina','Padova','Trieste','Brescia'],
+maxSelect:2 },
 
 { type:'wordcloud', section:'p1', num:4,
 q:'Con una parola. Come immagini la tua vita tra dieci anni.',
@@ -145,8 +146,8 @@ list:[
 
 // PERIODO 3 — Alloggio, portale e previdenza (12-20)
 { type:'sondaggio', section:'p3', num:12,
-q:'Hai già googlato quanto costa un appartamento a Roma o Milano?',
-options:['Sì, e mi sono pentito','Sì, ma conto sull\'alloggio di servizio','No, preferisco non saperlo','No, tanto non ci vado di sicuro'] },
+q:'Conosci l\'argomento Sanzioni disciplinari e premi per lodevole comportamento?',
+options:['Sì, me le hanno insegnate','Le conosco solo in parte','Ne ho sentito parlare ma non le conosco','No, non ne so niente'] },
 
 { type:'sondaggio', section:'p3', num:13,
 q:'Hai già in mente una sistemazione alloggiativa?',
@@ -175,17 +176,17 @@ answer:'Vecchiaia: 60 anni di età e 36 anni di contributi. Anzianità: 58 anni 
 { type:'quiz', section:'p3', num:17,
 q:'Abbiamo una previdenza complementare integrativa?',
 options:['No','Sì','Dipende dalla data di assunzione','Non lo so'],
-answer:'Risposta a cura di Daniele.' },
+answer:'Risposta data dal referente sindacale presente in aula.' },
 
 { type:'quiz', section:'p3', num:18,
 q:'Cos\'è il riscatto della laurea e a cosa serve?',
 options:['Serve a ottenere un titolo di studio riconosciuto dall\'amministrazione','Permette di trasformare gli anni di università in anni di contributi previdenziali','È un bonus economico per chi si è laureato prima di entrare in polizia','Non lo so'],
-answer:'Risposta a cura di Daniele.' },
+answer:'Risposta data dal referente sindacale presente in aula.' },
 
 { type:'quiz', section:'p3', num:19,
 q:'Cos\'è la ricongiunzione dei contributi?',
 options:['Il riscatto degli anni prestati nelle forze armate','Il trasferimento di contributi previdenziali da una cassa all\'altra','Il riscatto della laurea','Non lo so'],
-answer:'Risposta a cura di Daniele.' },
+answer:'Risposta data dal referente sindacale presente in aula.' },
 
 { type:'quiz', section:'p3', num:20,
 q:'Qual è il primo passo da compiere appena arrivati in sede?',
