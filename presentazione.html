@@ -2591,6 +2591,11 @@ document.getElementById('newSessionBtn').addEventListener('click', async () => {
       localStorage.setItem('courseNumber', courseNumber);
       applyCourseNumber();
     }
+    // Azzera il terzo contatto anche in locale
+    localStorage.removeItem('terzoNome');
+    localStorage.removeItem('terzoNumero');
+    if(terzoNomeInput) terzoNomeInput.value = '';
+    if(terzoNumeroInput) terzoNumeroInput.value = '';
     panelStatus.textContent = 'Nuova sessione avviata: ' + sessionId + '. Le slide riprendono dall\'inizio per gli allievi.';
     goTo(0);
   } catch(err){
